@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct iHodlApp: App {
+    
+    @StateObject private var viewRouter = ViewRouter()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView().environmentObject(viewRouter)
         }
     }
 }

@@ -8,17 +8,21 @@
 
 /* Begin PBXBuildFile section */
 		E38824F3288F19990002E9CB /* iHodlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38824F2288F19990002E9CB /* iHodlApp.swift */; };
-		E38824F5288F19990002E9CB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38824F4288F19990002E9CB /* ContentView.swift */; };
+		E38824F5288F19990002E9CB /* BaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38824F4288F19990002E9CB /* BaseView.swift */; };
 		E38824F7288F199A0002E9CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E38824F6288F199A0002E9CB /* Assets.xcassets */; };
 		E38824FA288F199A0002E9CB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E38824F9288F199A0002E9CB /* Preview Assets.xcassets */; };
+		E3882501288F1AD60002E9CB /* Base.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3882500288F1AD60002E9CB /* Base.swift */; };
+		E3882503288F1B8C0002E9CB /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3882502288F1B8C0002E9CB /* MainView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		E38824EF288F19990002E9CB /* iHodl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iHodl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E38824F2288F19990002E9CB /* iHodlApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iHodlApp.swift; sourceTree = "<group>"; };
-		E38824F4288F19990002E9CB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E38824F4288F19990002E9CB /* BaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
 		E38824F6288F199A0002E9CB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E38824F9288F199A0002E9CB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E3882500288F1AD60002E9CB /* Base.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base.swift; sourceTree = "<group>"; };
+		E3882502288F1B8C0002E9CB /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +56,8 @@
 			isa = PBXGroup;
 			children = (
 				E38824F2288F19990002E9CB /* iHodlApp.swift */,
-				E38824F4288F19990002E9CB /* ContentView.swift */,
+				E3882504288F1BA70002E9CB /* Model */,
+				E3882505288F1BB40002E9CB /* View */,
 				E38824F6288F199A0002E9CB /* Assets.xcassets */,
 				E38824F8288F199A0002E9CB /* Preview Content */,
 			);
@@ -65,6 +70,23 @@
 				E38824F9288F199A0002E9CB /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		E3882504288F1BA70002E9CB /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				E3882500288F1AD60002E9CB /* Base.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		E3882505288F1BB40002E9CB /* View */ = {
+			isa = PBXGroup;
+			children = (
+				E38824F4288F19990002E9CB /* BaseView.swift */,
+				E3882502288F1B8C0002E9CB /* MainView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,7 +159,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E38824F5288F19990002E9CB /* ContentView.swift in Sources */,
+				E3882501288F1AD60002E9CB /* Base.swift in Sources */,
+				E3882503288F1B8C0002E9CB /* MainView.swift in Sources */,
+				E38824F5288F19990002E9CB /* BaseView.swift in Sources */,
 				E38824F3288F19990002E9CB /* iHodlApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

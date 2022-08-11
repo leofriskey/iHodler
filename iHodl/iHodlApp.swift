@@ -11,10 +11,13 @@ import SwiftUI
 struct iHodlApp: App {
     
     @StateObject private var viewRouter = ViewRouter()
+    @StateObject private var market = Market()
     
     var body: some Scene {
         WindowGroup {
-            MainView().environmentObject(viewRouter)
+            MainView()
+                .environmentObject(viewRouter)
+                .environmentObject(market)
         }
     }
 }

@@ -16,10 +16,10 @@ struct MainView: View {
         TabView {
             Text("Portfolio")
                 .tabItem {
-                    Label("Portfolio", systemImage: "chart.pie.fill")
+                    Label("Potfolio", systemImage: "chart.pie")
                 }
                 .tag(0)
-            Text("Market")
+            MarketView()
                 .tabItem {
                     Label("Market", systemImage: "chart.xyaxis.line")
                 }

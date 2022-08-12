@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E3294A0928A591E400CC4BDC /* LineGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3294A0828A591E400CC4BDC /* LineGraphView.swift */; };
+		E3294A0B28A5AE9F00CC4BDC /* miniLineGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3294A0A28A5AE9F00CC4BDC /* miniLineGraphView.swift */; };
 		E32D9DE3289C1B5700429A94 /* Coin.swift in Sources */ = {isa = PBXBuildFile; fileRef = E32D9DE2289C1B5700429A94 /* Coin.swift */; };
 		E38824F3288F19990002E9CB /* iHodlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38824F2288F19990002E9CB /* iHodlApp.swift */; };
 		E38824F5288F19990002E9CB /* BaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38824F4288F19990002E9CB /* BaseView.swift */; };
@@ -22,6 +24,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E3294A0828A591E400CC4BDC /* LineGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineGraphView.swift; sourceTree = "<group>"; };
+		E3294A0A28A5AE9F00CC4BDC /* miniLineGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = miniLineGraphView.swift; sourceTree = "<group>"; };
 		E32D9DE2289C1B5700429A94 /* Coin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coin.swift; sourceTree = "<group>"; };
 		E38824EF288F19990002E9CB /* iHodl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iHodl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E38824F2288F19990002E9CB /* iHodlApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iHodlApp.swift; sourceTree = "<group>"; };
@@ -111,6 +115,8 @@
 			children = (
 				E39A198128A3F1E600E363DF /* MarketView.swift */,
 				E39A198728A453F600E363DF /* Top10View.swift */,
+				E3294A0828A591E400CC4BDC /* LineGraphView.swift */,
+				E3294A0A28A5AE9F00CC4BDC /* miniLineGraphView.swift */,
 			);
 			path = Market;
 			sourceTree = "<group>";
@@ -186,8 +192,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				E39A198828A453F600E363DF /* Top10View.swift in Sources */,
+				E3294A0928A591E400CC4BDC /* LineGraphView.swift in Sources */,
 				E3882501288F1AD60002E9CB /* Base.swift in Sources */,
 				E3882503288F1B8C0002E9CB /* MainView.swift in Sources */,
+				E3294A0B28A5AE9F00CC4BDC /* miniLineGraphView.swift in Sources */,
 				E39A198228A3F1E600E363DF /* MarketView.swift in Sources */,
 				E39A198428A3F29D00E363DF /* Colors.swift in Sources */,
 				E38824F5288F19990002E9CB /* BaseView.swift in Sources */,

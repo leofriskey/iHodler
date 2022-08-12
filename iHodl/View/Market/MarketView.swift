@@ -12,7 +12,9 @@ struct MarketView: View {
     @EnvironmentObject private var market: Market
     let timer = Timer.publish(every: 8, tolerance: 0.5, on: .main, in: .common).autoconnect()
     
-    @State private var top100Coins = [Coin_Preview]()
+    @State private var top10Coins = [Coin_Preview]()
+    
+    let sampleGraphData: [CGFloat] = [900, 1400, 984, 1020, 1080, 300, 1010, 900, 1100]
     
     var body: some View {
         NavigationView {
@@ -21,9 +23,9 @@ struct MarketView: View {
                     .ignoresSafeArea()
                 ScrollView(showsIndicators: false) {
                     VStack {
-                        // MARK: Top 100
+                        // MARK: Top 10
                         HStack {
-                            Text(market.top100Title)
+                            Text(market.top10Title)
                                 .font(.title2)
                                 .fontWeight(.bold)
                             Spacer()
@@ -44,11 +46,11 @@ struct MarketView: View {
                         }
                         .frame(maxWidth: UIScreen.screenWidth * 0.8)
                         VStack(spacing: 40) {
-                            ForEach(top100Coins) { coin in
+                            ForEach(top10Coins) { coin in
                                 NavigationLink {
                                     Text("Detail View")
                                 } label: {
-                                    Top100View(coin: coin)
+                                    Top10View(coin: coin, interval: market.timeInterval)
                                     .frame(width: UIScreen.screenWidth * 0.9, height: UIScreen.screenHeight * 0.18)
                                 }
                             }
@@ -59,26 +61,45 @@ struct MarketView: View {
             }
             .task {
                 do {
-                    try await market.fetchTop100Coins()
+                    try await market.fetchTop10Coins()
                 } catch {
                     print("Failed to fetch data on appear: \(error.localizedDescription)")
                 }
             }
             .navigationTitle(market.title)
+            .toolbar {
+                // MARK: Toolbar controlw
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Picker("Choose time interval: 1D or 7D", selection: $market.timeInterval) {
+                        ForEach(market.timeIntervals, id: \.self) { interval in
+                            Text(interval)
+                        }
+                    }
+                    .shadow(radius: 1, x: 0, y: 1)
+                    .pickerStyle(.segmented)
+                    Button {
+                        //
+                    } label: {
+                        Image(systemName: "bell.badge.fill")
+                            .font(.system(size: 14))
+                            .foregroundColor(.primary)
+                    }
+                }
+            }
         }
         .onReceive(timer) { time in
             Task {
                 do {
-                    try await market.fetchTop100Coins()
-                    self.top100Coins = market.top100Coins
+                    try await market.fetchTop10Coins()
+                    self.top10Coins = market.top10Coins
                 } catch {
                     print("Failed to fetch data with time: \(error.localizedDescription)")
                 }
             }
         }
-        .onReceive(market.$top100Coins) { newData in
+        .onReceive(market.$top10Coins) { newData in
             withAnimation(.easeOut(duration: 0.5)) {
-                self.top100Coins = newData
+                self.top10Coins = newData
             }
         }
     }

@@ -68,7 +68,12 @@ struct Coin_Preview: Identifiable, Codable {
     let market_cap_rank: Int
     let price_change_24h: Double
     let last_updated: String
-    let sparkline_in_7d: [String : [Double]]
+    
+    struct Sparkline: Codable {
+        let price: [Double]
+    }
+    let sparkline_in_7d: Sparkline
+    
     let price_change_percentage_1h_in_currency: Double
     let price_change_percentage_1y_in_currency: Double
     let price_change_percentage_24h_in_currency: Double

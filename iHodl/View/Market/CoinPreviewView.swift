@@ -1,5 +1,5 @@
 //
-//  CoinPreview.swift
+//  CoinPreviewView.swift
 //  iHodl
 //
 //  Created by Leo Friskey on 11.08.2022.

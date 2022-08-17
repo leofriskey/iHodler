@@ -8,8 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		E3294A0928A591E400CC4BDC /* LineGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3294A0828A591E400CC4BDC /* LineGraphView.swift */; };
-		E3294A0B28A5AE9F00CC4BDC /* miniLineGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3294A0A28A5AE9F00CC4BDC /* miniLineGraphView.swift */; };
+		E3294A0B28A5AE9F00CC4BDC /* SparklineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3294A0A28A5AE9F00CC4BDC /* SparklineView.swift */; };
 		E32D9DE3289C1B5700429A94 /* Coin.swift in Sources */ = {isa = PBXBuildFile; fileRef = E32D9DE2289C1B5700429A94 /* Coin.swift */; };
+		E34A61B828A9B38F0054E42C /* MarketContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34A61B728A9B38F0054E42C /* MarketContentView.swift */; };
 		E38824F3288F19990002E9CB /* iHodlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38824F2288F19990002E9CB /* iHodlApp.swift */; };
 		E38824F5288F19990002E9CB /* BaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38824F4288F19990002E9CB /* BaseView.swift */; };
 		E38824F7288F199A0002E9CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E38824F6288F199A0002E9CB /* Assets.xcassets */; };
@@ -19,14 +20,15 @@
 		E39A198228A3F1E600E363DF /* MarketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39A198128A3F1E600E363DF /* MarketView.swift */; };
 		E39A198428A3F29D00E363DF /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39A198328A3F29D00E363DF /* Colors.swift */; };
 		E39A198628A4134000E363DF /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39A198528A4134000E363DF /* Helper.swift */; };
-		E39A198828A453F600E363DF /* Top10View.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39A198728A453F600E363DF /* Top10View.swift */; };
+		E39A198828A453F600E363DF /* CoinPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39A198728A453F600E363DF /* CoinPreview.swift */; };
 		E39A198C28A45FA600E363DF /* Market.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39A198B28A45FA600E363DF /* Market.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		E3294A0828A591E400CC4BDC /* LineGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineGraphView.swift; sourceTree = "<group>"; };
-		E3294A0A28A5AE9F00CC4BDC /* miniLineGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = miniLineGraphView.swift; sourceTree = "<group>"; };
+		E3294A0A28A5AE9F00CC4BDC /* SparklineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparklineView.swift; sourceTree = "<group>"; };
 		E32D9DE2289C1B5700429A94 /* Coin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coin.swift; sourceTree = "<group>"; };
+		E34A61B728A9B38F0054E42C /* MarketContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketContentView.swift; sourceTree = "<group>"; };
 		E38824EF288F19990002E9CB /* iHodl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iHodl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E38824F2288F19990002E9CB /* iHodlApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iHodlApp.swift; sourceTree = "<group>"; };
 		E38824F4288F19990002E9CB /* BaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
@@ -37,7 +39,7 @@
 		E39A198128A3F1E600E363DF /* MarketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketView.swift; sourceTree = "<group>"; };
 		E39A198328A3F29D00E363DF /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		E39A198528A4134000E363DF /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
-		E39A198728A453F600E363DF /* Top10View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Top10View.swift; sourceTree = "<group>"; };
+		E39A198728A453F600E363DF /* CoinPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinPreview.swift; sourceTree = "<group>"; };
 		E39A198B28A45FA600E363DF /* Market.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Market.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -72,6 +74,7 @@
 			isa = PBXGroup;
 			children = (
 				E38824F2288F19990002E9CB /* iHodlApp.swift */,
+				E39A198528A4134000E363DF /* Helper.swift */,
 				E3882504288F1BA70002E9CB /* Model */,
 				E3882505288F1BB40002E9CB /* View */,
 				E38824F6288F199A0002E9CB /* Assets.xcassets */,
@@ -105,7 +108,6 @@
 				E3882502288F1B8C0002E9CB /* MainView.swift */,
 				E39A198328A3F29D00E363DF /* Colors.swift */,
 				E39A198928A45F1B00E363DF /* Market */,
-				E39A198528A4134000E363DF /* Helper.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -114,9 +116,10 @@
 			isa = PBXGroup;
 			children = (
 				E39A198128A3F1E600E363DF /* MarketView.swift */,
-				E39A198728A453F600E363DF /* Top10View.swift */,
+				E34A61B728A9B38F0054E42C /* MarketContentView.swift */,
+				E39A198728A453F600E363DF /* CoinPreview.swift */,
+				E3294A0A28A5AE9F00CC4BDC /* SparklineView.swift */,
 				E3294A0828A591E400CC4BDC /* LineGraphView.swift */,
-				E3294A0A28A5AE9F00CC4BDC /* miniLineGraphView.swift */,
 			);
 			path = Market;
 			sourceTree = "<group>";
@@ -191,14 +194,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E39A198828A453F600E363DF /* Top10View.swift in Sources */,
+				E39A198828A453F600E363DF /* CoinPreview.swift in Sources */,
 				E3294A0928A591E400CC4BDC /* LineGraphView.swift in Sources */,
 				E3882501288F1AD60002E9CB /* Base.swift in Sources */,
 				E3882503288F1B8C0002E9CB /* MainView.swift in Sources */,
-				E3294A0B28A5AE9F00CC4BDC /* miniLineGraphView.swift in Sources */,
+				E3294A0B28A5AE9F00CC4BDC /* SparklineView.swift in Sources */,
 				E39A198228A3F1E600E363DF /* MarketView.swift in Sources */,
 				E39A198428A3F29D00E363DF /* Colors.swift in Sources */,
 				E38824F5288F19990002E9CB /* BaseView.swift in Sources */,
+				E34A61B828A9B38F0054E42C /* MarketContentView.swift in Sources */,
 				E32D9DE3289C1B5700429A94 /* Coin.swift in Sources */,
 				E38824F3288F19990002E9CB /* iHodlApp.swift in Sources */,
 				E39A198628A4134000E363DF /* Helper.swift in Sources */,

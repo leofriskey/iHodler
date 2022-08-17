@@ -12,8 +12,6 @@ import SwiftUI
 struct LineGraphView: View {
     
     var data: [CGFloat]
-//    var color1: Color
-//    var color2: Color
     
     var body: some View {
         

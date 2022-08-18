@@ -215,6 +215,8 @@ struct Sparkline7D: Codable {
 // MARK: - CoinPreview
 struct CoinPreview: Identifiable, Codable {
     
+    static let placeholder = CoinPreview(id: UUID().uuidString , symbol: "placeholder", name: "placeholder", image: nil, currentPrice: 0, marketCapRank: nil, priceChange24H: nil, lastUpdated: nil, sparkline7D: Sparkline7D(price: Array(repeating: 0.00, count: 24)), priceChangePercentage1HInCurrency: nil, priceChangePercentage1YInCurrency: nil, priceChangePercentage24HInCurrency: nil, priceChangePercentage30DInCurrency: nil, priceChangePercentage7DInCurrency: nil)
+    
     let id, symbol, name: String
     let image: String?
     let currentPrice: Double
@@ -244,6 +246,27 @@ struct CoinPreview: Identifiable, Codable {
         case priceChangePercentage30DInCurrency = "price_change_percentage_30d_in_currency"
         case priceChangePercentage7DInCurrency = "price_change_percentage_7d_in_currency"
     }
+}
+// MARK: Watchlist Coins App Storage
+typealias WatchlistCoins = [CoinPreview]
+extension WatchlistCoins: RawRepresentable {
+    public init?(rawValue: String) {
+            guard let data = rawValue.data(using: .utf8),
+                let result = try? JSONDecoder().decode(WatchlistCoins.self, from: data)
+            else {
+                return nil
+            }
+            self = result
+        }
+
+        public var rawValue: String {
+            guard let data = try? JSONEncoder().encode(self),
+                let result = String(data: data, encoding: .utf8)
+            else {
+                return "[]"
+            }
+            return result
+        }
 }
 
 // MARK: Search Coins

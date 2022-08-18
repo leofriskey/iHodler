@@ -17,6 +17,7 @@
 		E38824FA288F199A0002E9CB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E38824F9288F199A0002E9CB /* Preview Assets.xcassets */; };
 		E3882501288F1AD60002E9CB /* Base.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3882500288F1AD60002E9CB /* Base.swift */; };
 		E3882503288F1B8C0002E9CB /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3882502288F1B8C0002E9CB /* MainView.swift */; };
+		E38BDC5B28AE83A000841F9F /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38BDC5A28AE83A000841F9F /* Network.swift */; };
 		E39A198228A3F1E600E363DF /* MarketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39A198128A3F1E600E363DF /* MarketView.swift */; };
 		E39A198428A3F29D00E363DF /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39A198328A3F29D00E363DF /* Colors.swift */; };
 		E39A198628A4134000E363DF /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39A198528A4134000E363DF /* Helper.swift */; };
@@ -36,6 +37,7 @@
 		E38824F9288F199A0002E9CB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E3882500288F1AD60002E9CB /* Base.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base.swift; sourceTree = "<group>"; };
 		E3882502288F1B8C0002E9CB /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		E38BDC5A28AE83A000841F9F /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		E39A198128A3F1E600E363DF /* MarketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketView.swift; sourceTree = "<group>"; };
 		E39A198328A3F29D00E363DF /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		E39A198528A4134000E363DF /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 			children = (
 				E3882500288F1AD60002E9CB /* Base.swift */,
 				E32D9DE2289C1B5700429A94 /* Coin.swift */,
+				E38BDC5A28AE83A000841F9F /* Network.swift */,
 				E39A198B28A45FA600E363DF /* Market.swift */,
 			);
 			path = Model;
@@ -206,6 +209,7 @@
 				E32D9DE3289C1B5700429A94 /* Coin.swift in Sources */,
 				E38824F3288F19990002E9CB /* iHodlApp.swift in Sources */,
 				E39A198628A4134000E363DF /* Helper.swift in Sources */,
+				E38BDC5B28AE83A000841F9F /* Network.swift in Sources */,
 				E39A198C28A45FA600E363DF /* Market.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -15,7 +15,7 @@ import SwiftUI
     let watchlistAbout = "Add coins to watchlist by holding on them"
     
     // MARK: Watchlist
-    @Published private(set) var watchlist = [CoinPreview]()
+    @AppStorage("watchlist") private(set) var watchlist = WatchlistCoins()
     
     // MARK: Top 10 Coins
     @Published private(set) var top10Coins = [CoinPreview]()
@@ -31,12 +31,14 @@ import SwiftUI
     
     // MARK: API Errors
     enum Error: LocalizedError {
-        case limitHit
+        case limitHit, failedAddingToWatchlist
         
         var errorDescription: String? {
             switch self {
             case .limitHit:
                 return "Too many requests"
+            case .failedAddingToWatchlist:
+                return "Could not add coin to a watchlist"
             }
         }
         
@@ -44,6 +46,8 @@ import SwiftUI
             switch self {
             case .limitHit:
                 return "Try again in a minute"
+            case .failedAddingToWatchlist:
+                return "Check your internet connection"
             }
         }
     }
@@ -90,6 +94,10 @@ import SwiftUI
         }
     }
     
+    func setPlaceholderTop10() {
+        top10Coins = Array(repeating: CoinPreview.placeholder, count: 10)
+    }
+    
     // MARK: fetch Top 10
     func fetchTop10Coins() async throws {
         guard let url = URL(string: "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d%2C30d%2C1y") else { return }
@@ -107,46 +115,44 @@ import SwiftUI
         if let decodedResponse = try? JSONDecoder().decode([CoinPreview].self, from: data) {
             top10Coins = decodedResponse
         }
-        //syncTop10andWatchlist()
+        syncTop10andWatchlist()
     }
     
     // MARK: sync Top 10 & Watchlist
-//    func syncTop10andWatchlist() { // i think this logic is flawed
-//        for i in top10Coins {
-//            for b in watchlist {
-//                if i.id == b.id {
-//                    if let index = watchlist.firstIndex(where: { $0.id == b.id } ) {
-//                        withAnimation {
-//                            watchlist[index] = i
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
+    func syncTop10andWatchlist() { // i think this logic is flawed
+        for i in top10Coins {
+            if let index = watchlist.firstIndex(where: { $0.id == i.id }) {
+                withAnimation {
+                    watchlist[index] = i
+                }
+            }
+        }
+    }
     
     // MARK: fetch Watchlist
-//    func fetchWatchlist() async throws { // i think this logic is flawed
-//        for b in watchlist {
-//            for i in top10Coins {
-//                // only fetch those that are not in (synced with) top 10
-//                if i.id != b.id {
-//                    if let index = watchlist.firstIndex(where: { $0.id == b.id } ) {
-//                        var newCoin: Coin? = nil
-//                        Task {
-//                            newCoin = try await fetchCoin(id: b.id, forPreview: false)
-//                        }
-//                        if let newCoin = newCoin {
-//                            let coinForPreview = coinToCoinPreview(newCoin)
-//                            withAnimation {
-//                                watchlist[index] = coinForPreview
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
+    func fetchWatchlist() async throws {
+        for i in watchlist {
+            // only fetch those that are not in (synced with) top 10
+            if top10Coins.firstIndex(where: { $0.id == i.id } ) != nil {
+                continue
+            } else {
+                // fetch Coin
+                let coin = try await fetchCoin(id: i.id, forPreview: true)
+                
+                if let coin = coin {
+                    // transform to CoinPreview
+                    let coinForPreview = coinToCoinPreview(coin)
+                    
+                    // update CoinPreview in a watchlist
+                    if let index = watchlist.firstIndex(where: { $0.id == coinForPreview.id }) {
+                        withAnimation {
+                            watchlist[index] = coinForPreview
+                        }
+                    }
+                }
+            }
+        }
+    }
     
     // MARK: add to watchlist
     
@@ -159,18 +165,44 @@ import SwiftUI
         }
     }
     
-    // add to watchlist from search (Coin -> CoinPreview)
-    func addToWatchlistFromSearch(_ coin: Coin) {
-        let coinForPreview = coinToCoinPreview(coin)
+    // add placeholder to watchlist while coin is fetching
+    func addToWatchlistFromSearchPlaceHolder() {
+        let coin = CoinPreview.placeholder
         
-        if watchlist.contains(where: { $0.id == coinForPreview.id } ) {
+        if watchlist.contains(where: { $0.id == coin.id } ) {
             return
         } else {
-            watchlist.append(coinForPreview)
+            watchlist.append(coin)
         }
     }
     
-    // transform Coin to Coin_Preview
+    // fetch coin, transform it for preview and replace placeholder with it
+    func addToWatchListFromSearch(id: String) async throws {
+        do {
+            let coin = try await fetchCoin(id: id, forPreview: true)
+            
+            if let coin = coin {
+                let coinForPreview = coinToCoinPreview(coin)
+                if watchlist.contains(where: { $0.id == coinForPreview.id } ) {
+                    return
+                } else {
+                    if let index = watchlist.firstIndex(where: { $0.symbol == "placeholder" }) {
+                        withAnimation {
+                            watchlist[index] = coinForPreview
+                        }
+                    }
+                }
+            }
+        } catch {
+            self.error = .failedAddingToWatchlist
+            if let index = watchlist.firstIndex(where: { $0.symbol == "placeholder"}) {
+                watchlist.remove(at: index)
+            }
+            throw Error.failedAddingToWatchlist
+        }
+    }
+    
+    // MARK: transform Coin to Coin_Preview
     func coinToCoinPreview(_ coin: Coin, currency: String = "usd") -> CoinPreview {
         return CoinPreview(
             id: coin.id,

@@ -13,6 +13,9 @@ struct MarketContentView: View {
     @Environment(\.isSearching) private var isSearching
     @Environment(\.dismissSearch) private var dismissSearch
     
+    @State private var fetchedCoin: Coin? = nil
+    @State private var fetchedCoinIndex = 0
+    
     var body: some View {
         ScrollView(showsIndicators: false) {
             if isSearching == false {
@@ -98,7 +101,7 @@ struct MarketContentView: View {
                                     Text("Detail View")
                                 } label: {
                                     CoinPreviewView(coin: coin, interval: market.timeInterval)
-                                    .frame(width: UIScreen.screenWidth * 0.9, height: UIScreen.screenHeight * 0.22)
+                                    .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.22)
                                     .contextMenu {
                                         // "add coin to watchlist" option if coin is not already there
                                         if !market.watchlist.contains(where: { $0.id == coin.id } ) {
@@ -189,22 +192,15 @@ struct MarketContentView: View {
                                     // "add coin to watchlist" option if coin is not already there
                                     if !market.watchlist.contains(where: { $0.id == coin.id } ) {
                                         Button {
-                                            var fetchedCoin: Coin? = nil
-                                            Task {
-                                                do {
-                                                    fetchedCoin = try await market.fetchCoin(id: coin.id, forPreview: true)
-                                                } catch {
-                                                    print("Failed to fetch Coin for SearchedCoin: \(String(describing: error))")
-                                                }
-                                            }
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                                 withAnimation {
-                                                    if let fetchedCoin = fetchedCoin {
-                                                        market.addToWatchlistFromSearch(fetchedCoin)
-                                                    } else {
-                                                        print("Could not fetch coin from the server")
-                                                    }
+                                                    // add placeholder while waiting for coin to fetch
+                                                    market.addToWatchlistFromSearchPlaceHolder()
                                                     dismissSearch()
+                                                }
+                                                Task {
+                                                    // fetch coin, transform it for preview and replace placeholder with it
+                                                    try await market.addToWatchListFromSearch(id: coin.id)
                                                 }
                                             }
                                         } label: {
@@ -235,10 +231,15 @@ struct MarketContentView: View {
             }
         }
         .onChange(of: isSearching) { newValue in
+            // delete cached search results
             if newValue == false {
                 market.searchLengthIsEnough = false
                 market.searchedCoins = []
             }
+        }
+        .onAppear {
+            // set placeholder for top10 before coins are fetched from the api
+            market.setPlaceholderTop10()
         }
     }
 }

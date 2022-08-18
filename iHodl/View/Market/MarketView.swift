@@ -10,6 +10,7 @@ import SwiftUI
 struct MarketView: View {
     
     @EnvironmentObject private var market: Market
+    @EnvironmentObject private var network: Network
     let timer = Timer.publish(every: 20, tolerance: 0.5, on: .main, in: .common).autoconnect()
     
     
@@ -35,14 +36,34 @@ struct MarketView: View {
                         }
                     }
                     .errorAlert(error: $market.error)
+                if network.connected == false {
+                    ZStack {
+                        Color.black
+                            .opacity(0.1)
+                            .blur(radius: 7)
+                            .ignoresSafeArea()
+                        VStack {
+                            Spacer()
+                            Label("Check your internet connection", systemImage: "wifi.exclamationmark")
+                                .frame(width: 300, height: 30)
+                                .background(
+                                    LinearGradient(colors: [.white.opacity(0.5), .white.opacity(0.33)], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.2)
+                                        .clipShape(
+                                            RoundedRectangle(cornerRadius: 16)
+                                        )
+                                        .shadow(radius: 2, x: -4, y: 4)
+                                        .shadow(radius: 2, x: 4, y: -4)
+                                )
+                                .padding()
+                        }
+                    }
+                }
             }
             .task {
                 do {
-                    // fetch top 10 coins on appear
-                    //try await market.fetchWatchlist()
-                    print("fetch watchlist: task")
+                    // fetch coins on appear
+                    try await market.fetchWatchlist()
                     try await market.fetchTop10Coins()
-                    print("fetch top10: task")
                 } catch {
                     print("Failed to fetch data on appear: \(error.localizedDescription)")
                 }
@@ -74,15 +95,17 @@ struct MarketView: View {
         .onReceive(timer) { time in
             Task {
                 do {
-                    // fetch coins every 15 seconds
-                    //try await market.fetchWatchlist()
-                    print("fetch watchlist: time")
+                    // fetch coins every 20 seconds
+                    try await market.fetchWatchlist()
                     try await market.fetchTop10Coins()
-                    print("fetch top10: time")
                 } catch {
                     print("Failed to fetch coins with time: \(error.localizedDescription)")
                 }
             }
+        }
+        .onAppear {
+            // check internet connection
+            network.checkConnection()
         }
     }
 }

@@ -11,12 +11,14 @@ import SwiftUI
 struct iHodlApp: App {
     
     @StateObject private var viewRouter = ViewRouter()
+    @StateObject private var network = Network()
     @StateObject private var market = Market()
     
     var body: some Scene {
         WindowGroup {
             MainView()
                 .environmentObject(viewRouter)
+                .environmentObject(network)
                 .environmentObject(market)
         }
     }

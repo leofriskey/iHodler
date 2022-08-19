@@ -13,9 +13,6 @@ struct MarketContentView: View {
     @Environment(\.isSearching) private var isSearching
     @Environment(\.dismissSearch) private var dismissSearch
     
-    @State private var fetchedCoin: Coin? = nil
-    @State private var fetchedCoinIndex = 0
-    
     var body: some View {
         ScrollView(showsIndicators: false) {
             if isSearching == false {
@@ -80,6 +77,11 @@ struct MarketContentView: View {
                         Spacer()
                     }
                     .padding()
+                    // MARK: Global chart
+                    GlobalView()
+                        .padding(.vertical)
+                    
+                    // MARK: Top 10 Coins
                     VStack(spacing: 0) {
                         HStack {
                             Text("Coin")
@@ -132,8 +134,10 @@ struct MarketContentView: View {
                         }
                         .padding(.bottom, 30)
                      }
+                    .padding(.top)
                 }
             }
+            // MARK: Search
             if isSearching == true {
                 // check if search text length is >= 3 characters
                 if market.searchLengthIsEnough {
@@ -223,6 +227,7 @@ struct MarketContentView: View {
                             }
                         }
                     }
+                // MARK: Search start suggestion
                 } else {
                     Text("Type at least 3 characters and press 'Search' to begin searching...")
                         .fontWeight(.light)

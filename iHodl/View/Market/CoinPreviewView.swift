@@ -195,10 +195,6 @@ struct CoinPreviewView: View {
                     LinearGradient(colors: [.white.opacity(0.5), .white.opacity(0.33)], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.2)
                 )
                 .cornerRadius(20)
-                ///  animation with time?
-//                .onChange(of: coin.currentPrice) { _ in
-//                    //
-//                }
                 
                 HStack {
                     Text("1")
@@ -220,17 +216,13 @@ struct CoinPreviewView: View {
                 .offset(x: -UIScreen.screenWidth * 0.08, y: UIScreen.screenHeight * 0.087)
                 .opacity(animatePlaceholder ? 0.3 : 1)
                 .onAppear {
-                    doAnimation()
+                    withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
+                        self.animatePlaceholder.toggle()
+                    }
                 }
                 
             }
             .frame(width: UIScreen.screenWidth * 0.9, height: UIScreen.screenHeight * 0.18)
-        }
-    }
-    
-    func doAnimation() {
-        withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
-            animatePlaceholder.toggle()
         }
     }
 }

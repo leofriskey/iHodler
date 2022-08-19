@@ -8,11 +8,19 @@
 import SwiftUI
 
 @MainActor class Market: ObservableObject {
+    
+    let coinsTimer = Timer.publish(every: 20, tolerance: 0.5, on: .main, in: .common).autoconnect()
+    
     // MARK: Lang
     let title = "Market"
     let top10Title = "Top 10"
     let watchlistTitle = "Watchlist"
     let watchlistAbout = "Add coins to watchlist by holding on them"
+    
+    // MARK: Global chart
+    @Published private(set) var globalData: GlobalData? = nil
+    @Published var gcPicker = "Overview"
+    let gcValues = ["Overview"]
     
     // MARK: Watchlist
     @AppStorage("watchlist") private(set) var watchlist = WatchlistCoins()
@@ -26,7 +34,7 @@ import SwiftUI
     @Published var searchedCoins = [SearchedCoin]()
     
     // MARK: Time Interval
-    @Published var timeInterval = "1D"
+    @AppStorage("time_interval") var timeInterval = "1D"
     let timeIntervals = ["1D", "7D"]
     
     // MARK: API Errors
@@ -212,6 +220,7 @@ import SwiftUI
             currentPrice: coin.marketData.currentPrice["\(currency)"] ?? 0,
             marketCapRank: coin.marketCapRank,
             priceChange24H: coin.marketData.priceChangePercentage24HInCurrency?["\(currency)"],
+            marketCapChangePercentage24H: coin.marketData.marketCapChangePercentage24H,
             lastUpdated: coin.marketData.lastUpdated,
             sparkline7D: coin.marketData.sparkline7D ?? Sparkline7D(price: Array(repeating: 0.00, count: 24)),
             priceChangePercentage1HInCurrency: coin.marketData.priceChangePercentage1HInCurrency?["\(currency)"],
@@ -310,5 +319,35 @@ import SwiftUI
         withAnimation {
             self.searchedCoins = searchedCoinsWithPrice.filter { $0.id.range(of: query, options: .caseInsensitive) != nil || $0.name.range(of: query, options: .caseInsensitive) != nil || $0.symbol.range(of: query, options: .caseInsensitive) != nil }
         }
+    }
+    
+    // MARK: Fetch Global data
+    func fetchGlobal() async throws {
+        guard let url = URL(string: "https://api.coingecko.com/api/v3/global") else {
+            return
+        }
+        
+        let configuration = URLSessionConfiguration.ephemeral
+        let session = URLSession(configuration: configuration)
+        
+        let (data, response) = try await session.data(from: url)
+        
+        if (response as? HTTPURLResponse)?.statusCode == 429 {
+            error = .limitHit
+            throw Error.limitHit
+        }
+        
+        let decodedResponse = try JSONDecoder().decode(GlobalData.self, from: data)
+        withAnimation {
+            self.globalData = decodedResponse
+        }
+    }
+    
+    func getScaleEffect(index: Int) -> Double {
+        let symbol = top10Coins[index].symbol
+        let rawPercentage = globalData?.data.marketCapPercentage[symbol]
+        let percentage = ((rawPercentage ?? 0) / 100) + 1
+        
+        return percentage
     }
 }

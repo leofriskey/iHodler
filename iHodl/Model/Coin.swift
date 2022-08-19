@@ -215,13 +215,14 @@ struct Sparkline7D: Codable {
 // MARK: - CoinPreview
 struct CoinPreview: Identifiable, Codable {
     
-    static let placeholder = CoinPreview(id: UUID().uuidString , symbol: "placeholder", name: "placeholder", image: nil, currentPrice: 0, marketCapRank: nil, priceChange24H: nil, lastUpdated: nil, sparkline7D: Sparkline7D(price: Array(repeating: 0.00, count: 24)), priceChangePercentage1HInCurrency: nil, priceChangePercentage1YInCurrency: nil, priceChangePercentage24HInCurrency: nil, priceChangePercentage30DInCurrency: nil, priceChangePercentage7DInCurrency: nil)
+    static let placeholder = CoinPreview(id: UUID().uuidString , symbol: "placeholder", name: "placeholder", image: nil, currentPrice: 0, marketCapRank: nil, priceChange24H: nil, marketCapChangePercentage24H: nil, lastUpdated: nil, sparkline7D: Sparkline7D(price: Array(repeating: 0.00, count: 24)), priceChangePercentage1HInCurrency: nil, priceChangePercentage1YInCurrency: nil, priceChangePercentage24HInCurrency: nil, priceChangePercentage30DInCurrency: nil, priceChangePercentage7DInCurrency: nil)
     
     let id, symbol, name: String
     let image: String?
     let currentPrice: Double
     let marketCapRank: Int?
     let priceChange24H: Double?
+    let marketCapChangePercentage24H: Double?
     let lastUpdated: String?
     
     let sparkline7D: Sparkline7D
@@ -238,6 +239,7 @@ struct CoinPreview: Identifiable, Codable {
         case currentPrice = "current_price"
         case marketCapRank = "market_cap_rank"
         case priceChange24H = "price_change_24h"
+        case marketCapChangePercentage24H = "market_cap_change_percentage_24h"
         case lastUpdated = "last_updated"
         case sparkline7D = "sparkline_in_7d"
         case priceChangePercentage1HInCurrency = "price_change_percentage_1h_in_currency"
@@ -295,3 +297,25 @@ struct SearchedCoin: Identifiable {
     let image: String?
     let currentPrice: Double
 }
+
+
+// MARK: - Global
+struct GlobalData: Codable {
+    let data: DataClass
+    
+    // MARK: - DataClass
+    struct DataClass: Codable {
+        let activeCryptocurrencies: Int?
+        let totalMarketCap, totalVolume, marketCapPercentage: [String: Double]
+        let marketCapChangePercentage24HUsd: Double
+
+        enum CodingKeys: String, CodingKey {
+            case activeCryptocurrencies = "active_cryptocurrencies"
+            case totalMarketCap = "total_market_cap"
+            case totalVolume = "total_volume"
+            case marketCapPercentage = "market_cap_percentage"
+            case marketCapChangePercentage24HUsd = "market_cap_change_percentage_24h_usd"
+        }
+    }
+}
+

@@ -11,7 +11,8 @@ struct MarketView: View {
     
     @EnvironmentObject private var market: Market
     @EnvironmentObject private var network: Network
-    let timer = Timer.publish(every: 20, tolerance: 0.5, on: .main, in: .common).autoconnect()
+    
+    @State private var animateNetworkWarnBorder = false
     
     
     var body: some View {
@@ -39,7 +40,7 @@ struct MarketView: View {
                 if network.connected == false {
                     ZStack {
                         Color.black
-                            .opacity(0.1)
+                            .opacity(0.2)
                             .blur(radius: 7)
                             .ignoresSafeArea()
                         VStack {
@@ -53,6 +54,15 @@ struct MarketView: View {
                                         )
                                         .shadow(radius: 2, x: -4, y: 4)
                                         .shadow(radius: 2, x: 4, y: -4)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .stroke(animateNetworkWarnBorder ? .red : .clear)
+                                                .onAppear {
+                                                    withAnimation(.easeInOut(duration: 1).repeatForever(autoreverses: true)) {
+                                                        self.animateNetworkWarnBorder.toggle()
+                                                    }
+                                                }
+                                        )
                                 )
                                 .padding()
                         }
@@ -61,9 +71,10 @@ struct MarketView: View {
             }
             .task {
                 do {
-                    // fetch coins on appear
+                    // fetch data on appear
                     try await market.fetchWatchlist()
                     try await market.fetchTop10Coins()
+                    try await market.fetchGlobal()
                 } catch {
                     print("Failed to fetch data on appear: \(error.localizedDescription)")
                 }
@@ -92,14 +103,15 @@ struct MarketView: View {
                 }
             }
         }
-        .onReceive(timer) { time in
+        .onReceive(market.coinsTimer) { time in
             Task {
                 do {
-                    // fetch coins every 20 seconds
+                    // fetch data every 20 seconds
                     try await market.fetchWatchlist()
                     try await market.fetchTop10Coins()
+                    try await market.fetchGlobal()
                 } catch {
-                    print("Failed to fetch coins with time: \(error.localizedDescription)")
+                    print("Failed to fetch data with time: \(error.localizedDescription)")
                 }
             }
         }

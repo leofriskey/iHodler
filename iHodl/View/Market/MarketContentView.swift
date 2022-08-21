@@ -66,6 +66,10 @@ struct MarketContentView: View {
                                             } label: {
                                                 Label("Remove from watchlist", systemImage: "star.slash.fill")
                                             }
+                                        } preview: {
+                                            CoinPreviewView(coin: coin, interval: market.timeInterval)
+                                            .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.22)
+                                            .background(colorScheme == .dark ? LinearGradient.darkBG : LinearGradient.lightBG)
                                         }
                                     }
                                 }
@@ -133,6 +137,10 @@ struct MarketContentView: View {
                                                     Label("Remove from watchlist", systemImage: "star.slash.fill")
                                                 }
                                             }
+                                        } preview: {
+                                            CoinPreviewView(coin: coin, interval: market.timeInterval)
+                                            .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.22)
+                                            .background(colorScheme == .dark ? LinearGradient.darkBG : LinearGradient.lightBG)
                                         }
                                     }
                                 }
@@ -147,103 +155,72 @@ struct MarketContentView: View {
                     // check if search text length is >= 3 characters
                     if market.searchLengthIsEnough {
                         // check if coins are not yet fetched -> show progress view
-                        if market.searchedCoins.isEmpty {
+                        if market.searchedCoins.isEmpty && market.searchNotFound == false {
                             HStack {
                                 Spacer()
                                 ProgressView()
                                 Spacer()
                             }
+                        }
+                        // if nothing is found for given search query
+                        if market.searchedCoins.isEmpty && market.searchNotFound == true {
+                            Text("Could not found any coin for this word... Check spelling or try another one.")
+                                .fontWeight(.light)
+                        }
                         // show list of coins for search query (by name, id, symbol)
-                        } else {
+                        if !market.searchedCoins.isEmpty {
                             ForEach(market.searchedCoins) { coin in
                                 NavigationLink {
                                     Text("Detail View")
                                 } label: {
-                                    HStack {
-                                        if coin.marketCapRank != nil {
-                                            Text("\(coin.marketCapRank!)")
-                                                .font(.caption2)
-                                                .foregroundColor(.secondary)
-                                                .frame(width: 34)
-                                        } else {
-                                            Text("")
-                                                .font(.caption2)
-                                                .frame(width: 34)
-                                        }
-                                        if coin.image != nil {
-                                            AsyncImage(
-                                                url: URL(string: coin.image!),
-                                                content: { image in
-                                                    image.resizable()
-                                                        .aspectRatio(contentMode: .fit)
-                                                        .frame(width: 32, height: 32)
-                                                },
-                                                placeholder: {
-                                                    ProgressView()
-                                                        .frame(width: 32, height: 32)
-                                                }
-                                            )
-                                        } else {
-                                            Image(systemName: "questionmark")
-                                                .foregroundColor(.secondary)
-                                                .frame(width: 40, height: 40)
-                                                .background(
-                                                    Circle()
-                                                        .fill(colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
-                                                )
-                                        }
-                                        VStack(alignment: .leading) {
-                                            Text(coin.name)
-                                            Text(coin.symbol.uppercased())
-                                                .font(.caption)
-                                                .foregroundColor(.secondary)
-                                        }
-                                        Spacer()
-                                        Text("\(coin.currentPrice.formatted(.currency(code: "usd")))")
-                                    }
+                                    SearchedCoinView(coin: coin)
                                     .padding(10)
-                                    .contextMenu {
-                                        // "add coin to watchlist" option if coin is not already there
-                                        if !market.watchlist.contains(where: { $0.id == coin.id } ) {
-                                            Button {
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                                    withAnimation {
-                                                        // add placeholder while waiting for coin to fetch
-                                                        market.addToWatchlistFromSearchPlaceHolder()
-                                                        dismissSearch()
-                                                    }
-                                                    Task {
-                                                        // fetch coin, transform it for preview and replace placeholder with it
-                                                        try await market.addToWatchListFromSearch(id: coin.id)
-                                                    }
+                                }.contextMenu {
+                                    // "add coin to watchlist" option if coin is not already there
+                                    if !market.watchlist.contains(where: { $0.id == coin.id } ) {
+                                        Button {
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                                withAnimation {
+                                                    // add placeholder while waiting for coin to fetch
+                                                    market.addToWatchlistFromSearchPlaceHolder()
+                                                    dismissSearch()
                                                 }
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                                    withAnimation {
-                                                        scrollProxy.scrollTo(watchlistID, anchor: .bottom)
-                                                    }
+                                                Task {
+                                                    // fetch coin, transform it for preview and replace placeholder with it
+                                                    try await market.addToWatchListFromSearch(id: coin.id)
                                                 }
-                                            } label: {
-                                                Label("Add to watchlist", systemImage: "star")
                                             }
-                                        // "remove coin from watchlist" option if coin is already there
-                                        } else {
-                                            Button {
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                                    withAnimation {
-                                                        market.removeFromWatchlist(coin)
-                                                        dismissSearch()
-                                                    }
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                                withAnimation {
+                                                    scrollProxy.scrollTo(watchlistID, anchor: .bottom)
                                                 }
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                                    withAnimation {
-                                                        scrollProxy.scrollTo(watchlistID, anchor: .bottom)
-                                                    }
-                                                }
-                                            } label: {
-                                                Label("Remove from watchlist", systemImage: "star.slash.fill")
                                             }
+                                        } label: {
+                                            Label("Add to watchlist", systemImage: "star")
+                                        }
+                                    // "remove coin from watchlist" option if coin is already there
+                                    } else {
+                                        Button {
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                                withAnimation {
+                                                    market.removeFromWatchlist(coin)
+                                                    dismissSearch()
+                                                }
+                                            }
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                                withAnimation {
+                                                    scrollProxy.scrollTo(watchlistID, anchor: .bottom)
+                                                }
+                                            }
+                                        } label: {
+                                            Label("Remove from watchlist", systemImage: "star.slash.fill")
                                         }
                                     }
+                                } preview: {
+                                    SearchedCoinView(coin: coin)
+                                    .padding(10)
+                                    .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.07)
+                                    .background(colorScheme == .dark ? LinearGradient.darkBG : LinearGradient.lightBG)
                                 }
                             }
                         }
@@ -253,6 +230,18 @@ struct MarketContentView: View {
                             .fontWeight(.light)
                             .foregroundColor(.secondary)
                     }
+                }
+            }
+        }
+        .refreshable {
+            Task {
+                do {
+                    // fetch data on scroll refresh
+                    try await market.fetchWatchlist()
+                    try await market.fetchTop10Coins()
+                    try await market.fetchGlobal()
+                } catch {
+                    print("Failed to fetch data on scroll refresh: \(error.localizedDescription)")
                 }
             }
         }

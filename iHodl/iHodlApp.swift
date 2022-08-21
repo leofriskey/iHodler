@@ -12,11 +12,13 @@ struct iHodlApp: App {
     
     @StateObject private var viewRouter = ViewRouter()
     @StateObject private var network = Network()
+    
+    // views
     @StateObject private var market = Market()
     
     var body: some Scene {
         WindowGroup {
-            MainView()
+            BaseView()
                 .environmentObject(viewRouter)
                 .environmentObject(network)
                 .environmentObject(market)

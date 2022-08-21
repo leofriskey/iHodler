@@ -10,11 +10,13 @@ import SwiftUI
 struct BaseView: View {
     
     @EnvironmentObject private var viewRouter: ViewRouter
+    @StateObject private var settings = Settings()
     
     var body: some View {
         switch viewRouter.currentPage {
         case .home:
             MainView()
+                .environmentObject(settings)
         }
     }
 }

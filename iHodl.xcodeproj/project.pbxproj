@@ -11,7 +11,10 @@
 		E3294A0B28A5AE9F00CC4BDC /* SparklineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3294A0A28A5AE9F00CC4BDC /* SparklineView.swift */; };
 		E32D9DE3289C1B5700429A94 /* Coin.swift in Sources */ = {isa = PBXBuildFile; fileRef = E32D9DE2289C1B5700429A94 /* Coin.swift */; };
 		E34A61B828A9B38F0054E42C /* MarketContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34A61B728A9B38F0054E42C /* MarketContentView.swift */; };
+		E36D9D5728B2D1500040A24D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E36D9D5628B2D1500040A24D /* SettingsView.swift */; };
+		E36D9D5928B2DEE30040A24D /* SearchedCoinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E36D9D5828B2DEE30040A24D /* SearchedCoinView.swift */; };
 		E37BBE5428B0358300405083 /* GlobalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37BBE5328B0358300405083 /* GlobalView.swift */; };
+		E3860E9E28B2B4D500F15B63 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3860E9D28B2B4D500F15B63 /* Settings.swift */; };
 		E38824F3288F19990002E9CB /* iHodlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38824F2288F19990002E9CB /* iHodlApp.swift */; };
 		E38824F5288F19990002E9CB /* BaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38824F4288F19990002E9CB /* BaseView.swift */; };
 		E38824F7288F199A0002E9CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E38824F6288F199A0002E9CB /* Assets.xcassets */; };
@@ -32,7 +35,10 @@
 		E3294A0A28A5AE9F00CC4BDC /* SparklineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparklineView.swift; sourceTree = "<group>"; };
 		E32D9DE2289C1B5700429A94 /* Coin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coin.swift; sourceTree = "<group>"; };
 		E34A61B728A9B38F0054E42C /* MarketContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketContentView.swift; sourceTree = "<group>"; };
+		E36D9D5628B2D1500040A24D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		E36D9D5828B2DEE30040A24D /* SearchedCoinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchedCoinView.swift; sourceTree = "<group>"; };
 		E37BBE5328B0358300405083 /* GlobalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalView.swift; sourceTree = "<group>"; };
+		E3860E9D28B2B4D500F15B63 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		E38824EF288F19990002E9CB /* iHodl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iHodl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E38824F2288F19990002E9CB /* iHodlApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iHodlApp.swift; sourceTree = "<group>"; };
 		E38824F4288F19990002E9CB /* BaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
@@ -100,6 +106,7 @@
 		E3882504288F1BA70002E9CB /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				E3860E9D28B2B4D500F15B63 /* Settings.swift */,
 				E3882500288F1AD60002E9CB /* Base.swift */,
 				E32D9DE2289C1B5700429A94 /* Coin.swift */,
 				E38BDC5A28AE83A000841F9F /* Network.swift */,
@@ -129,6 +136,8 @@
 				E3C71BFF28B10187006B8AAB /* CoinDetailView.swift */,
 				E3294A0A28A5AE9F00CC4BDC /* SparklineView.swift */,
 				E3294A0828A591E400CC4BDC /* LineGraphView.swift */,
+				E36D9D5628B2D1500040A24D /* SettingsView.swift */,
+				E36D9D5828B2DEE30040A24D /* SearchedCoinView.swift */,
 			);
 			path = Market;
 			sourceTree = "<group>";
@@ -206,6 +215,8 @@
 				E39A198828A453F600E363DF /* CoinPreviewView.swift in Sources */,
 				E3294A0928A591E400CC4BDC /* LineGraphView.swift in Sources */,
 				E3882501288F1AD60002E9CB /* Base.swift in Sources */,
+				E36D9D5728B2D1500040A24D /* SettingsView.swift in Sources */,
+				E3860E9E28B2B4D500F15B63 /* Settings.swift in Sources */,
 				E37BBE5428B0358300405083 /* GlobalView.swift in Sources */,
 				E3882503288F1B8C0002E9CB /* MainView.swift in Sources */,
 				E3294A0B28A5AE9F00CC4BDC /* SparklineView.swift in Sources */,
@@ -217,6 +228,7 @@
 				E32D9DE3289C1B5700429A94 /* Coin.swift in Sources */,
 				E38824F3288F19990002E9CB /* iHodlApp.swift in Sources */,
 				E39A198628A4134000E363DF /* Helper.swift in Sources */,
+				E36D9D5928B2DEE30040A24D /* SearchedCoinView.swift in Sources */,
 				E38BDC5B28AE83A000841F9F /* Network.swift in Sources */,
 				E39A198C28A45FA600E363DF /* Market.swift in Sources */,
 			);
@@ -355,6 +367,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -384,6 +397,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

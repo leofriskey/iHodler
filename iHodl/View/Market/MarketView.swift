@@ -18,7 +18,7 @@ struct MarketView: View {
     
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 // background color
                 (colorScheme == .dark ? LinearGradient.darkBG
@@ -30,6 +30,7 @@ struct MarketView: View {
                         // check if search text length is >= 3
                         if market.searchText.count >= 3 {
                             market.searchLengthIsEnough = true
+                            market.searchNotFound = false
                             Task {
                                 // fetch searched coins
                                 await market.searchForCoins(market.searchText)

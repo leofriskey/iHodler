@@ -29,7 +29,7 @@ struct MainView: View {
                     Label("News", systemImage: "newspaper")
                 }
                 .tag(2)
-            Text("Settings")
+            SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }

@@ -32,6 +32,7 @@ import SwiftUI
     @Published var searchText = ""
     @Published var searchLengthIsEnough = false
     @Published var searchedCoins = [SearchedCoin]()
+    @Published var searchNotFound = false
     
     // MARK: Time Interval
     @AppStorage("time_interval") var timeInterval = "1D"
@@ -245,7 +246,9 @@ import SwiftUI
     }
     
     // MARK: Search for coins
-    @MainActor func searchForCoins(_ query: String, currency: String = "usd") async {
+    @MainActor func searchForCoins(_ word: String, currency: String = "usd") async {
+        
+        let query = word.trimmingCharacters(in: .whitespacesAndNewlines)
         
         var searchedCoinsNoPrice = [CoinNoPrice]()
         var priceQuery = ""
@@ -280,6 +283,12 @@ import SwiftUI
                 searchedCoinsNoPrice.append(coin)
                 // build price query for 2nd api call
                 priceQuery += ("\(coin.id),")
+            }
+            
+            if searchedCoinsNoPrice.isEmpty {
+                withAnimation {
+                    self.searchNotFound = true
+                }
             }
         } catch {
             print(String(describing: error))

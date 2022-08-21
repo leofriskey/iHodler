@@ -12,6 +12,8 @@ struct MarketView: View {
     @EnvironmentObject private var market: Market
     @EnvironmentObject private var network: Network
     
+    @Environment(\.colorScheme) private var colorScheme
+    
     @State private var animateNetworkWarnBorder = false
     
     
@@ -19,8 +21,8 @@ struct MarketView: View {
         NavigationView {
             ZStack {
                 // background color
-                LinearGradient.darkBG
-                    .ignoresSafeArea()
+                (colorScheme == .dark ? LinearGradient.darkBG
+                    .ignoresSafeArea() : LinearGradient.lightBG.ignoresSafeArea())
                 // MARK: Main content
                 MarketContentView()
                     .searchable(text: $market.searchText, placement: .navigationBarDrawer(displayMode: .always))
@@ -48,7 +50,9 @@ struct MarketView: View {
                             Label("Check your internet connection", systemImage: "wifi.exclamationmark")
                                 .frame(width: 300, height: 30)
                                 .background(
-                                    LinearGradient(colors: [.white.opacity(0.5), .white.opacity(0.33)], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.2)
+                                    
+                                    colorScheme == .dark ?
+                                    LinearGradient.material02dark
                                         .clipShape(
                                             RoundedRectangle(cornerRadius: 16)
                                         )
@@ -63,20 +67,27 @@ struct MarketView: View {
                                                     }
                                                 }
                                         )
+                                    :
+                                    LinearGradient.material02light
+                                        .clipShape(
+                                            RoundedRectangle(cornerRadius: 16)
+                                        )
+                                        .shadow(radius: 2, x: -4, y: 4)
+                                        .shadow(radius: 2, x: 4, y: -4)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .stroke(animateNetworkWarnBorder ? .red : .clear)
+                                                .onAppear {
+                                                    withAnimation(.easeInOut(duration: 1).repeatForever(autoreverses: true)) {
+                                                        self.animateNetworkWarnBorder.toggle()
+                                                    }
+                                                }
+                                        )
+                                    
                                 )
                                 .padding()
                         }
                     }
-                }
-            }
-            .task {
-                do {
-                    // fetch data on appear
-                    try await market.fetchWatchlist()
-                    try await market.fetchTop10Coins()
-                    try await market.fetchGlobal()
-                } catch {
-                    print("Failed to fetch data on appear: \(error.localizedDescription)")
                 }
             }
             .navigationTitle(market.title)
@@ -90,7 +101,6 @@ struct MarketView: View {
                             Text(interval)
                         }
                     }
-                    .shadow(radius: 1, x: 0, y: 1)
                     .pickerStyle(.segmented)
                     // MARK: price notifications
                     Button {

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct CoinPreviewView: View {
     
+    @Environment(\.colorScheme) private var colorScheme
+    
     var coin: CoinPreview
     var interval: String
     
@@ -135,7 +137,7 @@ struct CoinPreviewView: View {
                 .padding([.horizontal, .top], 10)
                 .frame(width: UIScreen.screenWidth * 0.9, height: UIScreen.screenHeight * 0.18)
                 .background(
-                    LinearGradient(colors: [.white.opacity(0.5), .white.opacity(0.33)], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.2)
+                    colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light
                 )
                 .cornerRadius(20)
                 .onChange(of: coin.currentPrice) { _ in
@@ -192,7 +194,7 @@ struct CoinPreviewView: View {
                 .padding([.horizontal, .top], 10)
                 .frame(width: UIScreen.screenWidth * 0.9, height: UIScreen.screenHeight * 0.18)
                 .background(
-                    LinearGradient(colors: [.white.opacity(0.5), .white.opacity(0.33)], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.2)
+                    colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light
                 )
                 .cornerRadius(20)
                 
@@ -200,14 +202,14 @@ struct CoinPreviewView: View {
                     Text("1")
                         .font(.caption)
                         .opacity(0)
-                    LinearGradient(colors: [.white.opacity(0.5), .white.opacity(0.33)], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.5)
+                    (colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
                         .clipShape(Circle())
                         .frame(width: 32, height: 32)
                     VStack(alignment: .leading) {
-                        LinearGradient(colors: [.white.opacity(0.5), .white.opacity(0.33)], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.5)
+                        (colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
                             .frame(width: 100, height: 16)
                             .clipShape(RoundedRectangle(cornerRadius: 16))
-                        LinearGradient(colors: [.white.opacity(0.5), .white.opacity(0.33)], startPoint: .topLeading, endPoint: .bottomTrailing).opacity(0.5)
+                        (colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
                             .frame(width: 40, height: 12)
                             .clipShape(RoundedRectangle(cornerRadius: 16))
                     }

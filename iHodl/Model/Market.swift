@@ -61,6 +61,10 @@ import SwiftUI
     }
     @Published var error: Error? = nil
     
+    // MARK: DetailView
+    @Published var chartTimePicker = "1D"
+    let chartTimeIntervals = ["1H","1D","7D","30D","1Y"]
+    
     
     // MARK: Fetch Coin
     func fetchCoin(id: String, forPreview: Bool = false) async throws -> Coin? {
@@ -349,5 +353,20 @@ import SwiftUI
         let percentage = ((rawPercentage ?? 0) / 100) + 1
         
         return percentage
+    }
+    
+    init() {
+        // set placeholder for top10 before coins are fetched from the api
+        setPlaceholderTop10()
+        Task {
+            do {
+                // fetch data on launch
+                try await fetchWatchlist()
+                try await fetchTop10Coins()
+                try await fetchGlobal()
+            } catch {
+                print("Failed to fetch data on launch: \(error.localizedDescription)")
+            }
+        }
     }
 }

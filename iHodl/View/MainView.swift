@@ -10,10 +10,10 @@ import SwiftUI
 struct MainView: View {
     @EnvironmentObject private var viewRouter: ViewRouter
     @Environment(\.colorScheme) private var colorScheme
-    @State private var selectedTab = 0
+    @State private var selectedTab = 1
     
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             Text("Portfolio")
                 .tabItem {
                     Label("Potfolio", systemImage: "chart.pie")

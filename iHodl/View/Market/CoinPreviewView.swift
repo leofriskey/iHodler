@@ -75,7 +75,7 @@ struct CoinPreviewView: View {
                                 .opacity(darken ? 0.3 : 1)
                         }
                         .onAppear {
-                            sparkline = coin.sparkline7D.price?.suffix(24) ?? Array(repeating: 0.00, count: 24)
+                            sparkline = coin.sparkline7D.price?.suffix(25) ?? Array(repeating: 0.00, count: 25)
                         }
                         // MARK: 7D intrerval
                     } else { // 7D

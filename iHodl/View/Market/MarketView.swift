@@ -26,6 +26,8 @@ struct MarketView: View {
                 // MARK: Main content
                 MarketContentView()
                     .searchable(text: $market.searchText, placement: .navigationBarDrawer(displayMode: .always))
+                    .disabled(network.connected == false ? true : false)
+                    .blur(radius: network.connected == false ? 7 : 0)
                     .onSubmit(of: .search) {
                         // check if search text length is >= 3
                         if market.searchText.count >= 3 {
@@ -42,16 +44,20 @@ struct MarketView: View {
                     .errorAlert(error: $market.error)
                 if network.connected == false {
                     ZStack {
+                        colorScheme == .dark ?
                         Color.black
                             .opacity(0.2)
-                            .blur(radius: 7)
+                            .ignoresSafeArea()
+                        :
+                        Color.white
+                            .opacity(0.2)
                             .ignoresSafeArea()
                         VStack {
                             Spacer()
                             Label("Check your internet connection", systemImage: "wifi.exclamationmark")
                                 .frame(width: 300, height: 30)
                                 .background(
-                                    
+
                                     colorScheme == .dark ?
                                     LinearGradient.material02dark
                                         .clipShape(
@@ -84,7 +90,7 @@ struct MarketView: View {
                                                     }
                                                 }
                                         )
-                                    
+
                                 )
                                 .padding()
                         }
@@ -103,6 +109,7 @@ struct MarketView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .disabled(network.connected == false ? true : false)
                     // MARK: price notifications
                     Button {
                         // price notifications
@@ -129,6 +136,9 @@ struct MarketView: View {
         .onAppear {
             // check internet connection
             network.checkConnection()
+            for i in market.watchlist {
+                print(i.sparkline7D.price?.count ?? 0)
+            }
         }
     }
 }

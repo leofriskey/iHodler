@@ -14,6 +14,8 @@ struct CoinDetailView: View {
     @EnvironmentObject private var market: Market
     
     let coinPreview: CoinPreview
+    let currency = "usd"
+    @State private var coin: Coin? = nil
     
     @State private var blink = false
     
@@ -40,14 +42,16 @@ struct CoinDetailView: View {
                                 }
                             }
                             .pickerStyle(.segmented)
-                            .frame(width: UIScreen.screenWidth * 0.8, height: 16)
-                            .offset(x: UIScreen.screenWidth * 0.067, y: UIScreen.screenHeight * -0.15)
+                            .frame(width: UIScreen.screenWidth * 0.7, height: 16)
+                            .offset(x: UIScreen.screenWidth * 0.1, y: UIScreen.screenHeight * -0.15)
                         }
                     }
                     .padding()
                     // MARK: Info
+                    
                     HStack {
-                        // Image
+                        
+                        // MARK: Image
                         if coinPreview.image != nil {
                             AsyncImage(
                                 url: URL(string: coinPreview.image!),
@@ -77,12 +81,381 @@ struct CoinDetailView: View {
                                         .fill(colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
                                 )
                         }
-                        // Price change
+                        
+                        // MARK: symbol
+                        Text(coinPreview.symbol.uppercased())
+                            .font(.system(size: 16))
+                        
                         Spacer()
+                        
+                        // MARK: Price change
+                        if let coin {
+                            // Real data
+                            
+                            if market.chartTimePicker == "1H" { // MARK: 1H
+                                if coin.marketData.priceChangePercentage1HInCurrency?[currency] != nil {
+                                    // We have 1H data for price change %
+                                    if coin.marketData.priceChangePercentage1HInCurrency![currency]! > 0 {
+                                        // price change %
+                                        Text("+\(coin.marketData.priceChangePercentage1HInCurrency![currency]!, specifier: "%.2f")%")
+                                            .foregroundColor(.green)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        // price change $
+                                        let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage1HInCurrency![currency]! / 100) )
+                                        let priceChangeValue: Double = abs(initialPrice - coin.marketData.currentPrice[currency]!)
+                                        Text("+\(priceChangeValue.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.green)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    } else if coin.marketData.priceChangePercentage1HInCurrency![currency]! < 0 {
+                                        Text("\(coin.marketData.priceChangePercentage1HInCurrency![currency]!, specifier: "%.2f")%")
+                                            .foregroundColor(.red)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        // price change $
+                                        let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage1HInCurrency![currency]! / 100) )
+                                        let priceChangeValue: Double = abs(initialPrice - coin.marketData.currentPrice[currency]!)
+                                        Text("-\(priceChangeValue.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.red)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    } else {
+                                        Text("0%")
+                                            .foregroundColor(.secondary)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        Text("\(0.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.secondary)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    }
+                                    // We DONT have 1H data for price change %
+                                } else {
+                                    Text(market.noData)
+                                        .fontWeight(.light)
+                                        .font(.system(size: 16))
+                                        .italic()
+                                        .foregroundColor(.secondary)
+                                        .opacity(blink ? 0.3 : 1)
+                                    Spacer()
+                                    Text(market.noData)
+                                        .fontWeight(.light)
+                                        .font(.system(size: 16))
+                                        .italic()
+                                        .foregroundColor(.secondary)
+                                        .opacity(blink ? 0.3 : 1)
+                                }
+                            }
+                            if market.chartTimePicker == "1D" { // MARK: 1D
+                                if coin.marketData.priceChangePercentage24HInCurrency?[currency] != nil {
+                                    // We have 1D data for price change %
+                                    if coin.marketData.priceChangePercentage24HInCurrency![currency]! > 0 {
+                                        // price change %
+                                        Text("+\(coin.marketData.priceChangePercentage24HInCurrency![currency]!, specifier: "%.2f")%")
+                                            .foregroundColor(.green)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        // price change $
+                                        let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage24HInCurrency![currency]! / 100) )
+                                        let priceChangeValue: Double = abs(initialPrice - coin.marketData.currentPrice[currency]!)
+                                        Text("+\(priceChangeValue.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.green)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    } else if coin.marketData.priceChangePercentage24HInCurrency![currency]! < 0 {
+                                        Text("\(coin.marketData.priceChangePercentage24HInCurrency![currency]!, specifier: "%.2f")%")
+                                            .foregroundColor(.red)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        // price change $
+                                        let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage24HInCurrency![currency]! / 100) )
+                                        let priceChangeValue: Double = abs(initialPrice - coin.marketData.currentPrice[currency]!)
+                                        Text("-\(priceChangeValue.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.red)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    } else {
+                                        Text("0%")
+                                            .foregroundColor(.secondary)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        Text("\(0.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.secondary)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    }
+                                    // We DONT have 1D data for price change %
+                                } else {
+                                    Text(market.noData)
+                                        .fontWeight(.light)
+                                        .font(.system(size: 16))
+                                        .italic()
+                                        .foregroundColor(.secondary)
+                                        .opacity(blink ? 0.3 : 1)
+                                    Spacer()
+                                    Text(market.noData)
+                                        .fontWeight(.light)
+                                        .font(.system(size: 16))
+                                        .italic()
+                                        .foregroundColor(.secondary)
+                                        .opacity(blink ? 0.3 : 1)
+                                }
+                            }
+                            if market.chartTimePicker == "7D" { // MARK: 7D
+                                if coin.marketData.priceChangePercentage7DInCurrency?[currency] != nil {
+                                    // We have 7D data for price change %
+                                    if coin.marketData.priceChangePercentage7DInCurrency![currency]! > 0 {
+                                        // price change %
+                                        Text("+\(coin.marketData.priceChangePercentage7DInCurrency![currency]!, specifier: "%.2f")%")
+                                            .foregroundColor(.green)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        // price change $
+                                        let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage7DInCurrency![currency]! / 100) )
+                                        let priceChangeValue: Double = abs(initialPrice - coin.marketData.currentPrice[currency]!)
+                                        Text("+\(priceChangeValue.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.green)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    } else if coin.marketData.priceChangePercentage7DInCurrency![currency]! < 0 {
+                                        Text("\(coin.marketData.priceChangePercentage7DInCurrency![currency]!, specifier: "%.2f")%")
+                                            .foregroundColor(.red)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        // price change $
+                                        let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage7DInCurrency![currency]! / 100) )
+                                        let priceChangeValue: Double = abs(initialPrice - coin.marketData.currentPrice[currency]!)
+                                        Text("-\(priceChangeValue.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.red)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    } else {
+                                        Text("0%")
+                                            .foregroundColor(.secondary)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        Text("\(0.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.secondary)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    }
+                                    // We DONT have 7D data for price change %
+                                } else {
+                                    Text(market.noData)
+                                        .fontWeight(.light)
+                                        .font(.system(size: 16))
+                                        .italic()
+                                        .foregroundColor(.secondary)
+                                        .opacity(blink ? 0.3 : 1)
+                                    Spacer()
+                                    Text(market.noData)
+                                        .fontWeight(.light)
+                                        .font(.system(size: 16))
+                                        .italic()
+                                        .foregroundColor(.secondary)
+                                        .opacity(blink ? 0.3 : 1)
+                                }
+                            }
+                            if market.chartTimePicker == "30D" { // MARK: 30D
+                                if coin.marketData.priceChangePercentage30DInCurrency?[currency] != nil {
+                                    // We have 30D data for price change %
+                                    if coin.marketData.priceChangePercentage30DInCurrency![currency]! > 0 {
+                                        // price change %
+                                        Text("+\(coin.marketData.priceChangePercentage30DInCurrency![currency]!, specifier: "%.2f")%")
+                                            .foregroundColor(.green)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        // price change $
+                                        let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage30DInCurrency![currency]! / 100) )
+                                        let priceChangeValue: Double = abs(initialPrice - coin.marketData.currentPrice[currency]!)
+                                        Text("+\(priceChangeValue.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.green)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    } else if coin.marketData.priceChangePercentage30DInCurrency![currency]! < 0 {
+                                        Text("\(coin.marketData.priceChangePercentage30DInCurrency![currency]!, specifier: "%.2f")%")
+                                            .foregroundColor(.red)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        // price change $
+                                        let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage30DInCurrency![currency]! / 100) )
+                                        let priceChangeValue: Double = abs(initialPrice - coin.marketData.currentPrice[currency]!)
+                                        Text("-\(priceChangeValue.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.red)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    } else {
+                                        Text("0%")
+                                            .foregroundColor(.secondary)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        Text("\(0.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.secondary)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    }
+                                    // We DONT have 30D data for price change %
+                                } else {
+                                    Text(market.noData)
+                                        .fontWeight(.light)
+                                        .font(.system(size: 16))
+                                        .italic()
+                                        .foregroundColor(.secondary)
+                                        .opacity(blink ? 0.3 : 1)
+                                    Spacer()
+                                    Text(market.noData)
+                                        .fontWeight(.light)
+                                        .font(.system(size: 16))
+                                        .italic()
+                                        .foregroundColor(.secondary)
+                                        .opacity(blink ? 0.3 : 1)
+                                }
+                            }
+                            if market.chartTimePicker == "1Y" { // MARK: 1Y
+                                if coin.marketData.priceChangePercentage1YInCurrency?[currency] != nil {
+                                    // We have 1Y data for price change %
+                                    if coin.marketData.priceChangePercentage1YInCurrency![currency]! > 0 {
+                                        // price change %
+                                        Text("+\(coin.marketData.priceChangePercentage1YInCurrency![currency]!, specifier: "%.2f")%")
+                                            .foregroundColor(.green)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        // price change $
+                                        let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage1YInCurrency![currency]! / 100) )
+                                        let priceChangeValue: Double = abs(initialPrice - coin.marketData.currentPrice[currency]!)
+                                        Text("+\(priceChangeValue.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.green)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    } else if coin.marketData.priceChangePercentage1YInCurrency![currency]! < 0 {
+                                        Text("\(coin.marketData.priceChangePercentage1YInCurrency![currency]!, specifier: "%.2f")%")
+                                            .foregroundColor(.red)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        // price change $
+                                        let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage1YInCurrency![currency]! / 100) )
+                                        let priceChangeValue: Double = abs(initialPrice - coin.marketData.currentPrice[currency]!)
+                                        Text("-\(priceChangeValue.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.red)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    } else {
+                                        Text("0%")
+                                            .foregroundColor(.secondary)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                        Spacer()
+                                        Text("\(0.formatted(.currency(code: currency)))")
+                                            .foregroundColor(.secondary)
+                                            .font(.system(size: 16))
+                                            .opacity(blink ? 0.3 : 1)
+                                    }
+                                    // We DONT have 1Y data for price change %
+                                } else {
+                                    Text(market.noData)
+                                        .fontWeight(.light)
+                                        .font(.system(size: 16))
+                                        .italic()
+                                        .foregroundColor(.secondary)
+                                        .opacity(blink ? 0.3 : 1)
+                                    Spacer()
+                                    Text(market.noData)
+                                        .fontWeight(.light)
+                                        .font(.system(size: 16))
+                                        .italic()
+                                        .foregroundColor(.secondary)
+                                        .opacity(blink ? 0.3 : 1)
+                                }
+                            }
+                            if market.chartTimePicker == "All" { // MARK: All
+                                 Spacer()
+                            }
+                        } else {
+                            // Placeholder
+                            (colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
+                                .frame(width: 70, height: 16)
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
+                                .opacity(blink ? 0.3 : 1)
+                                .onAppear {
+                                    withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
+                                        blink.toggle()
+                                    }
+                                }
+                            
+                            Spacer()
+                            
+                            (colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
+                                .frame(width: 80, height: 16)
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
+                                .opacity(blink ? 0.3 : 1)
+                                .onAppear {
+                                    withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
+                                        blink.toggle()
+                                    }
+                                }
+                        }
                     }
-                    .padding()
+                    .padding(.horizontal)
                     .frame(maxWidth: UIScreen.screenWidth * 1)
+                    
+                    // MARK: Price
+                    if let coin {
+                        // Real data
+                        // We have price data for given currency
+                        if coin.marketData.currentPrice[currency] != nil {
+                            Text("\(coin.marketData.currentPrice[currency]!.stringWithoutZeroFraction) $")
+                                .font(.system(size: 20))
+                        // We DONT have price data for given currency
+                        } else {
+                            Text(market.noData)
+                                .fontWeight(.light)
+                                .font(.system(size: 20))
+                                .italic()
+                                .foregroundColor(.secondary)
+                        }
+                    } else {
+                        // Placeholder
+                        (colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
+                            .frame(width: 100, height: 20)
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .opacity(blink ? 0.3 : 1)
+                            .onAppear {
+                                withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
+                                    blink.toggle()
+                                }
+                            }
+                    }
                     Spacer()
+                }
+                .task {
+                    do {
+                        self.coin = try await market.fetchCoin(id: coinPreview.id)
+                    } catch {
+                        print("Failed to load \(coinPreview.id) detail info")
+                    }
+                }
+                .onChange(of: market.chartTimePicker) { _ in
+                    self.blink = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            self.blink = false
+                        }
+                    }
                 }
             }
         }

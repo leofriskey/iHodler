@@ -16,6 +16,7 @@ import SwiftUI
     let top10Title = "Top 10"
     let watchlistTitle = "Watchlist"
     let watchlistAbout = "Add coins to watchlist by holding on them"
+    let noData = "no data"
     
     // MARK: Global chart
     @Published private(set) var globalData: GlobalData? = nil
@@ -64,7 +65,7 @@ import SwiftUI
     
     // MARK: DetailView
     @Published var chartTimePicker = "1D"
-    let chartTimeIntervals = ["1H","1D","7D","30D","1Y"]
+    let chartTimeIntervals = ["1H","1D","7D","30D","1Y", "All"]
     
     
     // MARK: Fetch Coin

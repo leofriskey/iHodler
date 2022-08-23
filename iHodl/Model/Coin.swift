@@ -7,6 +7,13 @@
 
 import Foundation
 
+protocol CryptoCurrency {
+    var id: String { get }
+    var symbol: String { get }
+    var name: String { get }
+    var image: String? { get }
+}
+
 // MARK: - Coin
 struct Coin: Identifiable, Codable {
     let id, symbol, name: String
@@ -213,7 +220,7 @@ struct Sparkline7D: Codable {
 }
 
 // MARK: - CoinPreview
-struct CoinPreview: Identifiable, Codable {
+struct CoinPreview: Identifiable, Codable, CryptoCurrency {
     
     static let placeholder = CoinPreview(id: UUID().uuidString , symbol: "placeholder", name: "placeholder", image: nil, currentPrice: 0, marketCapRank: nil, priceChange24H: nil, marketCapChangePercentage24H: nil, lastUpdated: nil, sparkline7D: Sparkline7D(price: Array(repeating: 0.00, count: 24)), priceChangePercentage1HInCurrency: nil, priceChangePercentage1YInCurrency: nil, priceChangePercentage24HInCurrency: nil, priceChangePercentage30DInCurrency: nil, priceChangePercentage7DInCurrency: nil)
     
@@ -291,7 +298,7 @@ struct SearchedCoinsNoPrice: Decodable {
 }
 
 // final searched coin with price
-struct SearchedCoin: Identifiable {
+struct SearchedCoin: Identifiable, CryptoCurrency {
     let id, symbol, name: String
     let marketCapRank: Int?
     let image: String?

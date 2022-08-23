@@ -24,16 +24,17 @@ struct MainView: View {
                     Label("Market", systemImage: "chart.xyaxis.line")
                 }
                 .tag(1)
-            Text("News")
-                .tabItem {
-                    Label("News", systemImage: "newspaper")
-                }
-                .tag(2)
+            // coming soon...
+//            Text("News")
+//                .tabItem {
+//                    Label("News", systemImage: "newspaper")
+//                }
+//                .tag(2)
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }
-                .tag(3)
+                .tag(2)
         }
         .accentColor(.primary)
     }

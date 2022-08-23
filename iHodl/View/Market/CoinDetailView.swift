@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 struct CoinDetailView: View {
     
@@ -13,11 +14,12 @@ struct CoinDetailView: View {
     
     @EnvironmentObject private var market: Market
     
-    let coinPreview: CoinPreview
+    let anyCoin: CryptoCurrency
     let currency = "usd"
     @State private var coin: Coin? = nil
     
-    @State private var blink = false
+    @State private var blinkPrice = false
+    @State private var blinkChange = false
     
     var body: some View {
         ZStack {
@@ -29,12 +31,14 @@ struct CoinDetailView: View {
                     // MARK: Chart
                     ZStack {
                         ZStack {
+                            // MARK: Chart
                             // chart bg
                             Rectangle()
                                 .fill(colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light)
                                 .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.3)
+                            
                             // chart
-                            ///
+                            
                             // picker
                             Picker("Chart time interval", selection: $market.chartTimePicker) {
                                 ForEach(market.chartTimeIntervals, id: \.self) { interval in
@@ -52,9 +56,9 @@ struct CoinDetailView: View {
                     HStack {
                         
                         // MARK: Image
-                        if coinPreview.image != nil {
+                        if anyCoin.image != nil {
                             AsyncImage(
-                                url: URL(string: coinPreview.image!),
+                                url: URL(string: anyCoin.image!),
                                 content: { image in
                                     image.resizable()
                                         .aspectRatio(contentMode: .fit)
@@ -64,10 +68,10 @@ struct CoinDetailView: View {
                                     Circle()
                                         .fill(colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
                                         .frame(width: 40, height: 40)
-                                        .opacity(blink ? 0.3 : 1)
+                                        .opacity(blinkChange ? 0.3 : 1)
                                         .onAppear {
                                             withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
-                                                blink.toggle()
+                                                blinkChange.toggle()
                                             }
                                         }
                                 }
@@ -83,7 +87,7 @@ struct CoinDetailView: View {
                         }
                         
                         // MARK: symbol
-                        Text(coinPreview.symbol.uppercased())
+                        Text(anyCoin.symbol.uppercased())
                             .font(.system(size: 16))
                         
                         Spacer()
@@ -100,7 +104,7 @@ struct CoinDetailView: View {
                                         Text("+\(coin.marketData.priceChangePercentage1HInCurrency![currency]!, specifier: "%.2f")%")
                                             .foregroundColor(.green)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         // price change $
                                         let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage1HInCurrency![currency]! / 100) )
@@ -108,12 +112,12 @@ struct CoinDetailView: View {
                                         Text("+\(priceChangeValue.formatted(.currency(code: currency)))")
                                             .foregroundColor(.green)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     } else if coin.marketData.priceChangePercentage1HInCurrency![currency]! < 0 {
                                         Text("\(coin.marketData.priceChangePercentage1HInCurrency![currency]!, specifier: "%.2f")%")
                                             .foregroundColor(.red)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         // price change $
                                         let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage1HInCurrency![currency]! / 100) )
@@ -121,17 +125,17 @@ struct CoinDetailView: View {
                                         Text("-\(priceChangeValue.formatted(.currency(code: currency)))")
                                             .foregroundColor(.red)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     } else {
                                         Text("0%")
                                             .foregroundColor(.secondary)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         Text("\(0.formatted(.currency(code: currency)))")
                                             .foregroundColor(.secondary)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     }
                                     // We DONT have 1H data for price change %
                                 } else {
@@ -140,14 +144,14 @@ struct CoinDetailView: View {
                                         .font(.system(size: 16))
                                         .italic()
                                         .foregroundColor(.secondary)
-                                        .opacity(blink ? 0.3 : 1)
+                                        .opacity(blinkChange ? 0.3 : 1)
                                     Spacer()
                                     Text(market.noData)
                                         .fontWeight(.light)
                                         .font(.system(size: 16))
                                         .italic()
                                         .foregroundColor(.secondary)
-                                        .opacity(blink ? 0.3 : 1)
+                                        .opacity(blinkChange ? 0.3 : 1)
                                 }
                             }
                             if market.chartTimePicker == "1D" { // MARK: 1D
@@ -158,7 +162,7 @@ struct CoinDetailView: View {
                                         Text("+\(coin.marketData.priceChangePercentage24HInCurrency![currency]!, specifier: "%.2f")%")
                                             .foregroundColor(.green)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         // price change $
                                         let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage24HInCurrency![currency]! / 100) )
@@ -166,12 +170,12 @@ struct CoinDetailView: View {
                                         Text("+\(priceChangeValue.formatted(.currency(code: currency)))")
                                             .foregroundColor(.green)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     } else if coin.marketData.priceChangePercentage24HInCurrency![currency]! < 0 {
                                         Text("\(coin.marketData.priceChangePercentage24HInCurrency![currency]!, specifier: "%.2f")%")
                                             .foregroundColor(.red)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         // price change $
                                         let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage24HInCurrency![currency]! / 100) )
@@ -179,17 +183,17 @@ struct CoinDetailView: View {
                                         Text("-\(priceChangeValue.formatted(.currency(code: currency)))")
                                             .foregroundColor(.red)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     } else {
                                         Text("0%")
                                             .foregroundColor(.secondary)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         Text("\(0.formatted(.currency(code: currency)))")
                                             .foregroundColor(.secondary)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     }
                                     // We DONT have 1D data for price change %
                                 } else {
@@ -198,14 +202,14 @@ struct CoinDetailView: View {
                                         .font(.system(size: 16))
                                         .italic()
                                         .foregroundColor(.secondary)
-                                        .opacity(blink ? 0.3 : 1)
+                                        .opacity(blinkChange ? 0.3 : 1)
                                     Spacer()
                                     Text(market.noData)
                                         .fontWeight(.light)
                                         .font(.system(size: 16))
                                         .italic()
                                         .foregroundColor(.secondary)
-                                        .opacity(blink ? 0.3 : 1)
+                                        .opacity(blinkChange ? 0.3 : 1)
                                 }
                             }
                             if market.chartTimePicker == "7D" { // MARK: 7D
@@ -216,7 +220,7 @@ struct CoinDetailView: View {
                                         Text("+\(coin.marketData.priceChangePercentage7DInCurrency![currency]!, specifier: "%.2f")%")
                                             .foregroundColor(.green)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         // price change $
                                         let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage7DInCurrency![currency]! / 100) )
@@ -224,12 +228,12 @@ struct CoinDetailView: View {
                                         Text("+\(priceChangeValue.formatted(.currency(code: currency)))")
                                             .foregroundColor(.green)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     } else if coin.marketData.priceChangePercentage7DInCurrency![currency]! < 0 {
                                         Text("\(coin.marketData.priceChangePercentage7DInCurrency![currency]!, specifier: "%.2f")%")
                                             .foregroundColor(.red)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         // price change $
                                         let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage7DInCurrency![currency]! / 100) )
@@ -237,17 +241,17 @@ struct CoinDetailView: View {
                                         Text("-\(priceChangeValue.formatted(.currency(code: currency)))")
                                             .foregroundColor(.red)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     } else {
                                         Text("0%")
                                             .foregroundColor(.secondary)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         Text("\(0.formatted(.currency(code: currency)))")
                                             .foregroundColor(.secondary)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     }
                                     // We DONT have 7D data for price change %
                                 } else {
@@ -256,14 +260,14 @@ struct CoinDetailView: View {
                                         .font(.system(size: 16))
                                         .italic()
                                         .foregroundColor(.secondary)
-                                        .opacity(blink ? 0.3 : 1)
+                                        .opacity(blinkChange ? 0.3 : 1)
                                     Spacer()
                                     Text(market.noData)
                                         .fontWeight(.light)
                                         .font(.system(size: 16))
                                         .italic()
                                         .foregroundColor(.secondary)
-                                        .opacity(blink ? 0.3 : 1)
+                                        .opacity(blinkChange ? 0.3 : 1)
                                 }
                             }
                             if market.chartTimePicker == "30D" { // MARK: 30D
@@ -274,7 +278,7 @@ struct CoinDetailView: View {
                                         Text("+\(coin.marketData.priceChangePercentage30DInCurrency![currency]!, specifier: "%.2f")%")
                                             .foregroundColor(.green)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         // price change $
                                         let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage30DInCurrency![currency]! / 100) )
@@ -282,12 +286,12 @@ struct CoinDetailView: View {
                                         Text("+\(priceChangeValue.formatted(.currency(code: currency)))")
                                             .foregroundColor(.green)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     } else if coin.marketData.priceChangePercentage30DInCurrency![currency]! < 0 {
                                         Text("\(coin.marketData.priceChangePercentage30DInCurrency![currency]!, specifier: "%.2f")%")
                                             .foregroundColor(.red)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         // price change $
                                         let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage30DInCurrency![currency]! / 100) )
@@ -295,17 +299,17 @@ struct CoinDetailView: View {
                                         Text("-\(priceChangeValue.formatted(.currency(code: currency)))")
                                             .foregroundColor(.red)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     } else {
                                         Text("0%")
                                             .foregroundColor(.secondary)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         Text("\(0.formatted(.currency(code: currency)))")
                                             .foregroundColor(.secondary)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     }
                                     // We DONT have 30D data for price change %
                                 } else {
@@ -314,14 +318,14 @@ struct CoinDetailView: View {
                                         .font(.system(size: 16))
                                         .italic()
                                         .foregroundColor(.secondary)
-                                        .opacity(blink ? 0.3 : 1)
+                                        .opacity(blinkChange ? 0.3 : 1)
                                     Spacer()
                                     Text(market.noData)
                                         .fontWeight(.light)
                                         .font(.system(size: 16))
                                         .italic()
                                         .foregroundColor(.secondary)
-                                        .opacity(blink ? 0.3 : 1)
+                                        .opacity(blinkChange ? 0.3 : 1)
                                 }
                             }
                             if market.chartTimePicker == "1Y" { // MARK: 1Y
@@ -332,7 +336,7 @@ struct CoinDetailView: View {
                                         Text("+\(coin.marketData.priceChangePercentage1YInCurrency![currency]!, specifier: "%.2f")%")
                                             .foregroundColor(.green)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         // price change $
                                         let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage1YInCurrency![currency]! / 100) )
@@ -340,12 +344,12 @@ struct CoinDetailView: View {
                                         Text("+\(priceChangeValue.formatted(.currency(code: currency)))")
                                             .foregroundColor(.green)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     } else if coin.marketData.priceChangePercentage1YInCurrency![currency]! < 0 {
                                         Text("\(coin.marketData.priceChangePercentage1YInCurrency![currency]!, specifier: "%.2f")%")
                                             .foregroundColor(.red)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         // price change $
                                         let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage1YInCurrency![currency]! / 100) )
@@ -353,17 +357,17 @@ struct CoinDetailView: View {
                                         Text("-\(priceChangeValue.formatted(.currency(code: currency)))")
                                             .foregroundColor(.red)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     } else {
                                         Text("0%")
                                             .foregroundColor(.secondary)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                         Spacer()
                                         Text("\(0.formatted(.currency(code: currency)))")
                                             .foregroundColor(.secondary)
                                             .font(.system(size: 16))
-                                            .opacity(blink ? 0.3 : 1)
+                                            .opacity(blinkChange ? 0.3 : 1)
                                     }
                                     // We DONT have 1Y data for price change %
                                 } else {
@@ -372,14 +376,14 @@ struct CoinDetailView: View {
                                         .font(.system(size: 16))
                                         .italic()
                                         .foregroundColor(.secondary)
-                                        .opacity(blink ? 0.3 : 1)
+                                        .opacity(blinkChange ? 0.3 : 1)
                                     Spacer()
                                     Text(market.noData)
                                         .fontWeight(.light)
                                         .font(.system(size: 16))
                                         .italic()
                                         .foregroundColor(.secondary)
-                                        .opacity(blink ? 0.3 : 1)
+                                        .opacity(blinkChange ? 0.3 : 1)
                                 }
                             }
                             if market.chartTimePicker == "All" { // MARK: All
@@ -390,10 +394,10 @@ struct CoinDetailView: View {
                             (colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
                                 .frame(width: 70, height: 16)
                                 .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .opacity(blink ? 0.3 : 1)
+                                .opacity(blinkChange ? 0.3 : 1)
                                 .onAppear {
                                     withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
-                                        blink.toggle()
+                                        blinkChange.toggle()
                                     }
                                 }
                             
@@ -402,10 +406,10 @@ struct CoinDetailView: View {
                             (colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
                                 .frame(width: 80, height: 16)
                                 .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .opacity(blink ? 0.3 : 1)
+                                .opacity(blinkChange ? 0.3 : 1)
                                 .onAppear {
                                     withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
-                                        blink.toggle()
+                                        blinkChange.toggle()
                                     }
                                 }
                         }
@@ -420,6 +424,7 @@ struct CoinDetailView: View {
                         if coin.marketData.currentPrice[currency] != nil {
                             Text("\(coin.marketData.currentPrice[currency]!.stringWithoutZeroFraction) $")
                                 .font(.system(size: 20))
+                                .opacity(blinkPrice ? 0.3 : 1)
                         // We DONT have price data for given currency
                         } else {
                             Text(market.noData)
@@ -433,10 +438,10 @@ struct CoinDetailView: View {
                         (colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
                             .frame(width: 100, height: 20)
                             .clipShape(RoundedRectangle(cornerRadius: 16))
-                            .opacity(blink ? 0.3 : 1)
+                            .opacity(blinkChange ? 0.3 : 1)
                             .onAppear {
                                 withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
-                                    blink.toggle()
+                                    blinkChange.toggle()
                                 }
                             }
                     }
@@ -444,16 +449,52 @@ struct CoinDetailView: View {
                 }
                 .task {
                     do {
-                        self.coin = try await market.fetchCoin(id: coinPreview.id)
+                        // fetch coin on appear
+                        self.coin = try await market.fetchCoin(id: anyCoin.id)
+                        if market.chartTimePicker == "1H" {
+                            //try await market.fetchChart(coinID: anyCoin.id, interval: "1")
+                        } else if market.chartTimePicker == "1D" {
+                            //
+                        } else if market.chartTimePicker == "7D" {
+                            //
+                        } else if market.chartTimePicker == "30D" {
+                            //
+                        } else if market.chartTimePicker == "1Y" {
+                            //
+                        } else {
+                            //
+                        }
                     } catch {
-                        print("Failed to load \(coinPreview.id) detail info")
+                        print("Failed to load \(anyCoin.id) detail info")
                     }
                 }
                 .onChange(of: market.chartTimePicker) { _ in
-                    self.blink = true
+                    self.blinkChange = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         withAnimation(.easeInOut(duration: 0.5)) {
-                            self.blink = false
+                            self.blinkChange = false
+                        }
+                    }
+                }
+                .onChange(of: coin?.marketData.currentPrice) { newPrice in
+                    if market.oldMarketData?.currentPrice != newPrice {
+                        blinkPrice = true
+                        blinkChange = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            withAnimation(.easeInOut(duration: 0.5)) {
+                                blinkPrice = false
+                                blinkChange = false
+                            }
+                        }
+                    }
+                }
+                .onReceive(market.coinDetailTimer) { time in
+                    Task {
+                        do {
+                            // update coin every 8 sec
+                            self.coin = try await market.fetchCoin(id: anyCoin.id)
+                        } catch {
+                            print("Failed to update \(anyCoin.id) with time: \(error.localizedDescription)")
                         }
                     }
                 }
@@ -462,7 +503,7 @@ struct CoinDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text(coinPreview.name)
+                Text(anyCoin.name)
             }
         }
     }

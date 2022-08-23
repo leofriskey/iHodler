@@ -51,7 +51,7 @@ struct MarketContentView: View {
                                 .frame(maxWidth: UIScreen.screenWidth * 0.8)
                                 ForEach(market.watchlist.sorted { ($0.marketCapRank ?? 0) < ($1.marketCapRank ?? 1) }) { coin in
                                     NavigationLink {
-                                        CoinDetailView(coinPreview: coin)
+                                        CoinDetailView(anyCoin: coin)
                                     } label: {
                                         CoinPreviewView(coin: coin, interval: market.timeInterval)
                                         .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.22)
@@ -109,7 +109,7 @@ struct MarketContentView: View {
                             VStack(spacing: 20) {
                                 ForEach(market.top10Coins) { coin in
                                     NavigationLink {
-                                        CoinDetailView(coinPreview: coin)
+                                        CoinDetailView(anyCoin: coin)
                                     } label: {
                                         CoinPreviewView(coin: coin, interval: market.timeInterval)
                                         .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.22)
@@ -171,7 +171,7 @@ struct MarketContentView: View {
                         if !market.searchedCoins.isEmpty {
                             ForEach(market.searchedCoins) { coin in
                                 NavigationLink {
-                                    Text("Detail View")
+                                    CoinDetailView(anyCoin: coin)
                                 } label: {
                                     SearchedCoinView(coin: coin)
                                     .padding(10)

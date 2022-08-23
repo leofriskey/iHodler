@@ -10,6 +10,7 @@ import SwiftUI
 @MainActor class Market: ObservableObject {
     
     let coinsTimer = Timer.publish(every: 20, tolerance: 0.5, on: .main, in: .common).autoconnect()
+    let coinDetailTimer = Timer.publish(every: 8, tolerance: 0.5, on: .main, in: .common).autoconnect()
     
     // MARK: Lang
     let title = "Market"
@@ -64,8 +65,9 @@ import SwiftUI
     @Published var error: Error? = nil
     
     // MARK: DetailView
-    @Published var chartTimePicker = "1D"
+    @AppStorage("chartTimePicker") var chartTimePicker = "1D"
     let chartTimeIntervals = ["1H","1D","7D","30D","1Y", "All"]
+    @Published var oldMarketData: Coin.MarketData? = nil
     
     
     // MARK: Fetch Coin
@@ -103,6 +105,10 @@ import SwiftUI
             }
             
             let decodedResponse = try JSONDecoder().decode(Coin.self, from: data)
+            
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+//                self.oldMarketData = decodedResponse.marketData
+//            }
             
             return decodedResponse
         }

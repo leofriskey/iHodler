@@ -326,3 +326,14 @@ struct GlobalData: Codable {
     }
 }
 
+// MARK: CoinChart
+struct CoinChart: Decodable {
+    let prices: [[Double]]
+}
+
+// create CoinChartData dot from CoinChart
+struct CoinChartData: Identifiable {
+    let id = UUID()
+    let date: Date
+    let price: Double
+}

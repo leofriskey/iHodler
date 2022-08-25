@@ -136,9 +136,6 @@ struct MarketView: View {
         .onAppear {
             // check internet connection
             network.checkConnection()
-            for i in market.watchlist {
-                print(i.sparkline7D.price?.count ?? 0)
-            }
         }
     }
 }

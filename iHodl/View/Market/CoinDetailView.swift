@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Charts
 
 struct CoinDetailView: View {
     
@@ -17,9 +16,12 @@ struct CoinDetailView: View {
     let anyCoin: CryptoCurrency
     let currency = "usd"
     @State private var coin: Coin? = nil
+    @State private var chart = [CoinChartData]()
     
     @State private var blinkPrice = false
     @State private var blinkChange = false
+    
+    @State private var expandedChart = false
     
     var body: some View {
         ZStack {
@@ -32,25 +34,75 @@ struct CoinDetailView: View {
                     ZStack {
                         ZStack {
                             // MARK: Chart
-                            // chart bg
-                            Rectangle()
-                                .fill(colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light)
-                                .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.3)
-                            
-                            // chart
-                            
-                            // picker
-                            Picker("Chart time interval", selection: $market.chartTimePicker) {
-                                ForEach(market.chartTimeIntervals, id: \.self) { interval in
-                                    Text(interval)
+                            ZStack {
+                                ZStack {
+                                    GeometryReader { geo in
+                                        ScrollView(.horizontal, showsIndicators: false) {
+                                            ScrollViewReader { scroll in
+                                                // chart
+                                                if market.chartLoaded == true {
+                                                    if coin != nil {
+                                                        ChartView(coin: coin!, data: chart, interval: market.chartTimePicker, expanded: expandedChart)
+                                                            .frame(maxHeight: UIScreen.screenHeight * 0.25)
+                                                            .padding(.horizontal, 5)
+                                                            .frame(width: expandedChart ? geo.size.width * 3 : geo.size.width * 1, height: UIScreen.screenHeight * 0.3)
+                                                            .id("chart")
+                                                            .onChange(of: expandedChart) { newValue in
+                                                                // scroll to the latest data in chart after expanding
+                                                                if newValue == true {
+                                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                                        withAnimation(.easeInOut(duration: 0.7)) {
+                                                                            scroll.scrollTo("chart", anchor: .trailing)
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        // chart bg
+                                        .background(Rectangle()
+                                            .fill(colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light))
+                                    }
+                                }
+                                .blur(radius: market.chartLoaded ? 0 : 3)
+                                // progress view
+                                if market.chartLoaded == false {
+                                    ProgressView()
                                 }
                             }
-                            .pickerStyle(.segmented)
-                            .frame(width: UIScreen.screenWidth * 0.7, height: 16)
-                            .offset(x: UIScreen.screenWidth * 0.1, y: UIScreen.screenHeight * -0.15)
+                            // picker
+                            HStack {
+                                Spacer()
+                                Picker("Chart time interval", selection: $market.chartTimePicker) {
+                                    ForEach(market.chartTimeIntervals, id: \.self) { interval in
+                                        Text(interval)
+                                    }
+                                }
+                                .pickerStyle(.segmented)
+                                .frame(width: UIScreen.screenWidth * 0.7, height: 16)
+                                .padding(.trailing)
+                                
+                                Button {
+                                    withAnimation {
+                                        expandedChart.toggle()
+                                    }
+                                } label: {
+                                    Image(systemName: expandedChart ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+                                        .background(
+                                            Circle()
+                                                .fill(colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light)
+                                                .frame(width: 32, height: 32)
+                                        )
+                                }
+                                .padding(.trailing)
+                            }
+                            .offset(y: UIScreen.screenHeight * 0.15)
                         }
+                        .frame(height: UIScreen.screenHeight * 0.3)
                     }
-                    .padding()
+                    .padding(.vertical)
                     // MARK: Info
                     
                     HStack {
@@ -96,64 +148,6 @@ struct CoinDetailView: View {
                         if let coin {
                             // Real data
                             
-                            if market.chartTimePicker == "1H" { // MARK: 1H
-                                if coin.marketData.priceChangePercentage1HInCurrency?[currency] != nil {
-                                    // We have 1H data for price change %
-                                    if coin.marketData.priceChangePercentage1HInCurrency![currency]! > 0 {
-                                        // price change %
-                                        Text("+\(coin.marketData.priceChangePercentage1HInCurrency![currency]!, specifier: "%.2f")%")
-                                            .foregroundColor(.green)
-                                            .font(.system(size: 16))
-                                            .opacity(blinkChange ? 0.3 : 1)
-                                        Spacer()
-                                        // price change $
-                                        let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage1HInCurrency![currency]! / 100) )
-                                        let priceChangeValue: Double = abs(initialPrice - coin.marketData.currentPrice[currency]!)
-                                        Text("+\(priceChangeValue.formatted(.currency(code: currency)))")
-                                            .foregroundColor(.green)
-                                            .font(.system(size: 16))
-                                            .opacity(blinkChange ? 0.3 : 1)
-                                    } else if coin.marketData.priceChangePercentage1HInCurrency![currency]! < 0 {
-                                        Text("\(coin.marketData.priceChangePercentage1HInCurrency![currency]!, specifier: "%.2f")%")
-                                            .foregroundColor(.red)
-                                            .font(.system(size: 16))
-                                            .opacity(blinkChange ? 0.3 : 1)
-                                        Spacer()
-                                        // price change $
-                                        let initialPrice: Double = coin.marketData.currentPrice[currency]! / (1 + (coin.marketData.priceChangePercentage1HInCurrency![currency]! / 100) )
-                                        let priceChangeValue: Double = abs(initialPrice - coin.marketData.currentPrice[currency]!)
-                                        Text("-\(priceChangeValue.formatted(.currency(code: currency)))")
-                                            .foregroundColor(.red)
-                                            .font(.system(size: 16))
-                                            .opacity(blinkChange ? 0.3 : 1)
-                                    } else {
-                                        Text("0%")
-                                            .foregroundColor(.secondary)
-                                            .font(.system(size: 16))
-                                            .opacity(blinkChange ? 0.3 : 1)
-                                        Spacer()
-                                        Text("\(0.formatted(.currency(code: currency)))")
-                                            .foregroundColor(.secondary)
-                                            .font(.system(size: 16))
-                                            .opacity(blinkChange ? 0.3 : 1)
-                                    }
-                                    // We DONT have 1H data for price change %
-                                } else {
-                                    Text(market.noData)
-                                        .fontWeight(.light)
-                                        .font(.system(size: 16))
-                                        .italic()
-                                        .foregroundColor(.secondary)
-                                        .opacity(blinkChange ? 0.3 : 1)
-                                    Spacer()
-                                    Text(market.noData)
-                                        .fontWeight(.light)
-                                        .font(.system(size: 16))
-                                        .italic()
-                                        .foregroundColor(.secondary)
-                                        .opacity(blinkChange ? 0.3 : 1)
-                                }
-                            }
                             if market.chartTimePicker == "1D" { // MARK: 1D
                                 if coin.marketData.priceChangePercentage24HInCurrency?[currency] != nil {
                                     // We have 1D data for price change %
@@ -451,32 +445,32 @@ struct CoinDetailView: View {
                     do {
                         // fetch coin on appear
                         self.coin = try await market.fetchCoin(id: anyCoin.id)
-                        if market.chartTimePicker == "1H" {
-                            //try await market.fetchChart(coinID: anyCoin.id, interval: "1")
-                        } else if market.chartTimePicker == "1D" {
-                            //
-                        } else if market.chartTimePicker == "7D" {
-                            //
-                        } else if market.chartTimePicker == "30D" {
-                            //
-                        } else if market.chartTimePicker == "1Y" {
-                            //
-                        } else {
-                            //
-                        }
+                        // fetch chart on appear
+                        chart = try await market.fetchCoinChart(coinID: anyCoin.id, interval: market.chartTimePicker)
                     } catch {
                         print("Failed to load \(anyCoin.id) detail info")
                     }
                 }
                 .onChange(of: market.chartTimePicker) { _ in
+                    // animate interval change
+                    market.chartLoaded = false
                     self.blinkChange = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         withAnimation(.easeInOut(duration: 0.5)) {
                             self.blinkChange = false
                         }
                     }
+                    // fetch chart on time interval change
+                    Task {
+                        do {
+                            chart = try await market.fetchCoinChart(coinID: anyCoin.id, interval: market.chartTimePicker)
+                        } catch {
+                            print("Failed to load chart for \(market.chartTimePicker)")
+                        }
+                    }
                 }
                 .onChange(of: coin?.marketData.currentPrice) { newPrice in
+                    // animate price change
                     if market.oldMarketData?.currentPrice != newPrice {
                         blinkPrice = true
                         blinkChange = true
@@ -484,6 +478,14 @@ struct CoinDetailView: View {
                             withAnimation(.easeInOut(duration: 0.5)) {
                                 blinkPrice = false
                                 blinkChange = false
+                            }
+                        }
+                        // update chart on price change
+                        Task {
+                            do {
+                                chart = try await market.fetchCoinChart(coinID: anyCoin.id, interval: market.chartTimePicker, isRefresh: true)
+                            } catch {
+                                print("Failed to load chart on ptice change for \(market.chartTimePicker)")
                             }
                         }
                     }

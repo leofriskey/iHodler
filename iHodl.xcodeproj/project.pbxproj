@@ -28,6 +28,7 @@
 		E39A198828A453F600E363DF /* CoinPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39A198728A453F600E363DF /* CoinPreviewView.swift */; };
 		E39A198C28A45FA600E363DF /* Market.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39A198B28A45FA600E363DF /* Market.swift */; };
 		E3C71C0028B10187006B8AAB /* CoinDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3C71BFF28B10187006B8AAB /* CoinDetailView.swift */; };
+		E3EA7C4F28B79E2C005FD758 /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EA7C4E28B79E2C005FD758 /* ChartView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +54,7 @@
 		E39A198728A453F600E363DF /* CoinPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinPreviewView.swift; sourceTree = "<group>"; };
 		E39A198B28A45FA600E363DF /* Market.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Market.swift; sourceTree = "<group>"; };
 		E3C71BFF28B10187006B8AAB /* CoinDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinDetailView.swift; sourceTree = "<group>"; };
+		E3EA7C4E28B79E2C005FD758 /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,6 +140,7 @@
 				E3294A0828A591E400CC4BDC /* LineGraphView.swift */,
 				E36D9D5628B2D1500040A24D /* SettingsView.swift */,
 				E36D9D5828B2DEE30040A24D /* SearchedCoinView.swift */,
+				E3EA7C4E28B79E2C005FD758 /* ChartView.swift */,
 			);
 			path = Market;
 			sourceTree = "<group>";
@@ -215,6 +218,7 @@
 				E39A198828A453F600E363DF /* CoinPreviewView.swift in Sources */,
 				E3294A0928A591E400CC4BDC /* LineGraphView.swift in Sources */,
 				E3882501288F1AD60002E9CB /* Base.swift in Sources */,
+				E3EA7C4F28B79E2C005FD758 /* ChartView.swift in Sources */,
 				E36D9D5728B2D1500040A24D /* SettingsView.swift in Sources */,
 				E3860E9E28B2B4D500F15B63 /* Settings.swift in Sources */,
 				E37BBE5428B0358300405083 /* GlobalView.swift in Sources */,

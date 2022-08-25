@@ -73,6 +73,7 @@ struct MarketContentView: View {
                                         }
                                     }
                                 }
+                                .disabled(market.watchlist.first?.symbol == "placeholder" ? true : false)
                             }
                             .id(watchlistID)
                         }
@@ -144,6 +145,7 @@ struct MarketContentView: View {
                                         }
                                     }
                                 }
+                                .disabled(market.top10Coins.first?.symbol == "placeholder" ? true : false)
                             }
                             .padding(.bottom, 30)
                          }
@@ -257,6 +259,6 @@ struct MarketContentView: View {
 
 struct MarketContentView_Previews: PreviewProvider {
     static var previews: some View {
-        MarketView().environmentObject(Market()).environment(\.colorScheme, .dark)
+        MarketView().environmentObject(Market()).environment(\.colorScheme, .dark).environmentObject(Network())
     }
 }

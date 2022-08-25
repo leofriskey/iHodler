@@ -66,8 +66,10 @@ import SwiftUI
     
     // MARK: DetailView
     @AppStorage("chartTimePicker") var chartTimePicker = "1D"
-    let chartTimeIntervals = ["1H","1D","7D","30D","1Y", "All"]
+    let chartTimeIntervals = ["1D","7D","30D","1Y","All"]
     @Published var oldMarketData: Coin.MarketData? = nil
+    @Published var chart = [CoinChartData]()
+    @Published var chartLoaded = false
     
     
     // MARK: Fetch Coin
@@ -106,9 +108,9 @@ import SwiftUI
             
             let decodedResponse = try JSONDecoder().decode(Coin.self, from: data)
             
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-//                self.oldMarketData = decodedResponse.marketData
-//            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                self.oldMarketData = decodedResponse.marketData
+            }
             
             return decodedResponse
         }
@@ -371,6 +373,55 @@ import SwiftUI
         return percentage
     }
     
+    func fetchCoinChart(coinID: String, interval: String, isRefresh: Bool = false, currency: String = "usd") async throws -> [CoinChartData] {
+        
+        if isRefresh == false {
+            chartLoaded = false
+        }
+        
+        var tempUrl: URL? = nil
+        
+        if interval == "1D" {
+            tempUrl = URL(string: "https://api.coingecko.com/api/v3/coins/\(coinID)/market_chart?vs_currency=\(currency)&days=1")
+        }
+        if interval == "7D" {
+            tempUrl = URL(string: "https://api.coingecko.com/api/v3/coins/\(coinID)/market_chart?vs_currency=\(currency)&days=7")
+        }
+        if interval == "30D" {
+            tempUrl = URL(string: "https://api.coingecko.com/api/v3/coins/\(coinID)/market_chart?vs_currency=\(currency)&days=30")
+        }
+        if interval == "1Y" {
+            tempUrl = URL(string: "https://api.coingecko.com/api/v3/coins/\(coinID)/market_chart?vs_currency=\(currency)&days=365")
+        }
+        if interval == "All" {
+            tempUrl = URL(string: "https://api.coingecko.com/api/v3/coins/\(coinID)/market_chart?vs_currency=\(currency)&days=max")
+        }
+        
+        guard let url = tempUrl else { return [CoinChartData]() }
+        
+        let configuration = URLSessionConfiguration.ephemeral
+        let session = URLSession(configuration: configuration)
+        
+        let (data, response) = try await session.data(from: url)
+        
+        if (response as? HTTPURLResponse)?.statusCode == 429 {
+            error = .limitHit
+            throw Error.limitHit
+        }
+        
+        let decodedResponse = try JSONDecoder().decode(CoinChart.self, from: data)
+        
+        var tempArray = [CoinChartData]()
+        for datePrice in decodedResponse.prices {
+            tempArray.append(CoinChartData(date: Date(timeIntervalSince1970: (datePrice[0] / 1000.0)), price: datePrice[1]))
+        }
+        
+        chartLoaded = true
+        return tempArray
+    }
+    
+    
+    // MARK: Init
     init() {
         // set placeholder for top10 before coins are fetched from the api
         setPlaceholderTop10()

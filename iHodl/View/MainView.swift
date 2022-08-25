@@ -10,21 +10,22 @@ import SwiftUI
 struct MainView: View {
     @EnvironmentObject private var viewRouter: ViewRouter
     @Environment(\.colorScheme) private var colorScheme
-    @State private var selectedTab = 1
+    @State private var selectedTab = 0
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            Text("Portfolio")
-                .tabItem {
-                    Label("Potfolio", systemImage: "chart.pie")
-                }
-                .tag(0)
+            /// coming sooner...
+//            Text("Portfolio")
+//                .tabItem {
+//                    Label("Potfolio", systemImage: "chart.pie")
+//                }
+//                .tag(0)
             MarketView()
                 .tabItem {
                     Label("Market", systemImage: "chart.xyaxis.line")
                 }
-                .tag(1)
-            // coming soon...
+                .tag(0)
+            /// coming soon...
 //            Text("News")
 //                .tabItem {
 //                    Label("News", systemImage: "newspaper")
@@ -34,7 +35,7 @@ struct MainView: View {
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }
-                .tag(2)
+                .tag(1)
         }
         .accentColor(.primary)
     }

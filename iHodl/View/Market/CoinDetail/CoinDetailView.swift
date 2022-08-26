@@ -9,19 +9,28 @@ import SwiftUI
 
 struct CoinDetailView: View {
     
+    //MARK: environments
     @Environment(\.colorScheme) private var colorScheme
-    
     @EnvironmentObject private var market: Market
     
+    //MARK: init
     let anyCoin: CryptoCurrency
     let currency = "usd"
+    
+    //MARK: coin & chart
     @State private var coin: Coin? = nil
     @State private var chart = [CoinChartData]()
     
+    //MARK: animation
     @State private var blinkPrice = false
     @State private var blinkChange = false
     
+    //MARK: expanded chart
     @State private var expandedChart = false
+    
+    //MARK: Market info
+    @State private var marketInfoArray = [String]()
+    
     
     var body: some View {
         ZStack {
@@ -36,11 +45,11 @@ struct CoinDetailView: View {
                             // MARK: Chart
                             ZStack {
                                 ZStack {
-                                    GeometryReader { geo in
-                                        ScrollView(.horizontal, showsIndicators: false) {
-                                            ScrollViewReader { scroll in
-                                                // chart
-                                                if market.chartLoaded == true {
+                                    if market.chartLoaded == true {
+                                        GeometryReader { geo in
+                                            ScrollView(.horizontal, showsIndicators: false) {
+                                                ScrollViewReader { scroll in
+                                                    // MARK: chart
                                                     if coin != nil {
                                                         ChartView(coin: coin!, data: chart, interval: market.chartTimePicker, expanded: expandedChart)
                                                             .frame(maxHeight: UIScreen.screenHeight * 0.25)
@@ -60,24 +69,44 @@ struct CoinDetailView: View {
                                                     }
                                                 }
                                             }
+                                            // MARK: chart bg
+                                            .background(
+                                                Rectangle()
+                                                    .fill(colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light)
+                                            )
                                         }
-                                        // chart bg
-                                        .background(Rectangle()
-                                            .fill(colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light))
                                     }
                                 }
                                 .blur(radius: market.chartLoaded ? 0 : 3)
-                                // progress view
+                                // MARK: progress view
                                 if market.chartLoaded == false {
                                     ProgressView()
                                 }
                             }
-                            // picker
+                            // MARK: picker
                             HStack {
                                 Spacer()
                                 Picker("Chart time interval", selection: $market.chartTimePicker) {
                                     ForEach(market.chartTimeIntervals, id: \.self) { interval in
                                         Text(interval)
+                                    }
+                                }
+                                .onChange(of: market.chartTimePicker) { _ in
+                                    // MARK: animate time interval change
+                                    market.chartLoaded = false
+                                    self.blinkChange = true
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        withAnimation(.easeInOut(duration: 0.5)) {
+                                            self.blinkChange = false
+                                        }
+                                    }
+                                    // MARK: fetch chart on time interval change
+                                    Task {
+                                        do {
+                                            chart = try await market.fetchCoinChart(coinID: anyCoin.id, interval: market.chartTimePicker)
+                                        } catch {
+                                            print("Failed to load chart for \(market.chartTimePicker)")
+                                        }
                                     }
                                 }
                                 .pickerStyle(.segmented)
@@ -409,7 +438,6 @@ struct CoinDetailView: View {
                         }
                     }
                     .padding(.horizontal)
-                    .frame(maxWidth: UIScreen.screenWidth * 1)
                     
                     // MARK: Price
                     if let coin {
@@ -440,37 +468,41 @@ struct CoinDetailView: View {
                             }
                     }
                     Spacer()
+                    
+                    //MARK: Market info
+                    if let coin {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 20) {
+                                // Volume 1D
+                                InfoCardsView(coin: coin, type: .volume)
+                                // Market Cap
+                                InfoCardsView(coin: coin, type: .marketCap)
+                                // Circulating Supply
+                                InfoCardsView(coin: coin, type: .supply)
+                            }
+                            .padding()
+                        }
+                    }
+                    
+                    //MARK: Notifications
+                    //
+                    
+                    Spacer()
                 }
                 .task {
                     do {
-                        // fetch coin on appear
+                        //MARK: fetch coin on appear
                         self.coin = try await market.fetchCoin(id: anyCoin.id)
-                        // fetch chart on appear
+                        
+                        
+                        //MARK: fetch chart on appear
                         chart = try await market.fetchCoinChart(coinID: anyCoin.id, interval: market.chartTimePicker)
                     } catch {
                         print("Failed to load \(anyCoin.id) detail info")
                     }
                 }
-                .onChange(of: market.chartTimePicker) { _ in
-                    // animate interval change
-                    market.chartLoaded = false
-                    self.blinkChange = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            self.blinkChange = false
-                        }
-                    }
-                    // fetch chart on time interval change
-                    Task {
-                        do {
-                            chart = try await market.fetchCoinChart(coinID: anyCoin.id, interval: market.chartTimePicker)
-                        } catch {
-                            print("Failed to load chart for \(market.chartTimePicker)")
-                        }
-                    }
-                }
                 .onChange(of: coin?.marketData.currentPrice) { newPrice in
-                    // animate price change
+                    // MARK: animate price change
                     if market.oldMarketData?.currentPrice != newPrice {
                         blinkPrice = true
                         blinkChange = true
@@ -480,7 +512,7 @@ struct CoinDetailView: View {
                                 blinkChange = false
                             }
                         }
-                        // update chart on price change
+                        // MARK: update chart on price change
                         Task {
                             do {
                                 chart = try await market.fetchCoinChart(coinID: anyCoin.id, interval: market.chartTimePicker, isRefresh: true)
@@ -491,14 +523,22 @@ struct CoinDetailView: View {
                     }
                 }
                 .onReceive(market.coinDetailTimer) { time in
+                    guard market.coinDetailTimerIsActive else { return }
+                    
                     Task {
                         do {
-                            // update coin every 8 sec
+                            // MARK: update coin every 30 sec
                             self.coin = try await market.fetchCoin(id: anyCoin.id)
                         } catch {
                             print("Failed to update \(anyCoin.id) with time: \(error.localizedDescription)")
                         }
                     }
+                }
+                .onAppear {
+                    market.coinDetailTimerIsActive = true
+                }
+                .onDisappear {
+                    market.coinDetailTimerIsActive = false
                 }
             }
         }
@@ -506,6 +546,29 @@ struct CoinDetailView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Text(anyCoin.name)
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                HStack {
+                    //MARK: Add/Remove from Watchlist
+                    Button {
+                        if self.coin != nil {
+                            if !market.watchlist.contains(where: { $0.id == coin!.id } ) {
+                                let previewCoin = market.coinToCoinPreview(coin!)
+                                market.addToWatchlist(previewCoin)
+                            } else {
+                                market.removeFromWatchlist(coin!)
+                            }
+                        }
+                    } label: {
+                        Image(systemName: market.watchlist.contains(where: { $0.id == coin?.id } ) ? "star.slash.fill" : "star")
+                    }
+                    //MARK: Add Notification
+                    Button {
+                        //
+                    } label: {
+                        Image(systemName: "bell")
+                    }
+                }
             }
         }
     }

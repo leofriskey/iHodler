@@ -14,19 +14,53 @@ extension UIScreen {
    static let screenSize = UIScreen.main.bounds.size
 }
 
-// MARK: Show an error alert
 extension View {
-    func errorAlert(error: Binding<Market.Error?>, buttonTitle: String = "OK") -> some View {
+    // MARK: Show an error alert
+    func errorAlert(error: Binding<Market.Error?>, remainingTime: Binding<Int>) -> some View {
         let localizedAlertError = LocalizedAlertError(error: error.wrappedValue)
-        return alert(isPresented: .constant(localizedAlertError != nil), error: localizedAlertError) { _ in
-            Button(buttonTitle) {
-                error.wrappedValue = nil
+        
+        return ZStack {
+            self
+                .blur(radius: error.wrappedValue != nil ? 2 : 0)
+                .disabled(error.wrappedValue != nil ? true : false)
+            if error.wrappedValue != nil {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(.ultraThinMaterial)
+                        .frame(width: UIScreen.screenWidth * 0.7, height: UIScreen.screenHeight * 0.2)
+                    VStack {
+                        Text("\(localizedAlertError?.errorDescription ?? "")")
+                            .font(.title3)
+                        Text("\(localizedAlertError?.recoverySuggestion ?? "")")
+                            .padding()
+                            .fontWeight(.light)
+                        Spacer()
+                        Divider()
+                        Button {
+                            error.wrappedValue = nil
+                            remainingTime.wrappedValue = 120
+                        } label: {
+                            if remainingTime.wrappedValue != 0 {
+                                Text("\(remainingTime.wrappedValue)")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.secondary)
+                            } else {
+                                Text("OK")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                        .disabled(remainingTime.wrappedValue != 0 ? true : false)
+                    }
+                    .padding()
+                }
+                .frame(width: UIScreen.screenWidth * 0.7, height: UIScreen.screenHeight * 0.2)
             }
-        } message: { error in
-            Text(error.recoverySuggestion ?? "")
         }
     }
 }
+
+//MARK: Localized Error
 struct LocalizedAlertError: LocalizedError {
     let underlyingError: LocalizedError
     var errorDescription: String? {
@@ -42,6 +76,7 @@ struct LocalizedAlertError: LocalizedError {
     }
 }
 
+//MARK: Strip zeroes at the end
 extension Double {
     var stringWithoutZeroFraction: String {
         return truncatingRemainder(dividingBy: 1) == 0 ? String(format: "%.0f", self) : String(self)

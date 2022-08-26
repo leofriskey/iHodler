@@ -9,8 +9,13 @@ import SwiftUI
 
 @MainActor class Market: ObservableObject {
     
-    let coinsTimer = Timer.publish(every: 20, tolerance: 0.5, on: .main, in: .common).autoconnect()
-    let coinDetailTimer = Timer.publish(every: 8, tolerance: 0.5, on: .main, in: .common).autoconnect()
+    // MARK: Timers
+    // Market View timer
+    let marketTimer = Timer.publish(every: 30, tolerance: 0.5, on: .main, in: .common).autoconnect()
+    @Published var marketTimerIsActive = true
+    // Coin Detail View timer
+    let coinDetailTimer = Timer.publish(every: 30, tolerance: 0.5, on: .main, in: .common).autoconnect()
+    @Published var coinDetailTimerIsActive = false
     
     // MARK: Lang
     let title = "Market"
@@ -56,27 +61,36 @@ import SwiftUI
         var recoverySuggestion: String? {
             switch self {
             case .limitHit:
-                return "Try again in a minute"
+                return "Try again in a few minutes."
             case .failedAddingToWatchlist:
                 return "Check your internet connection"
             }
         }
     }
     @Published var error: Error? = nil
+    @Published var errorTime = 120
+    let errorTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    private let sleeptime: UInt64 = 120_000_000_000
     
     // MARK: DetailView
     @AppStorage("chartTimePicker") var chartTimePicker = "1D"
     let chartTimeIntervals = ["1D","7D","30D","1Y","All"]
     @Published var oldMarketData: Coin.MarketData? = nil
-    @Published var chart = [CoinChartData]()
-    @Published var chartLoaded = false
+    
+    // MARK: Chart
+    @Published var chartLoaded = true
     
     
     // MARK: Fetch Coin
     func fetchCoin(id: String, forPreview: Bool = false) async throws -> Coin? {
+        
+        if self.error != nil {
+            try await Task.sleep(nanoseconds: self.sleeptime)
+        }
+        
         // for preview (e.g. watchlist)
         if forPreview {
-            guard let url = URL(string: "https://api.coingecko.com/api/v3/coins/\(id)?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=true") else { return nil}
+            guard let url = URL(string: "https://api.coingecko.com/api/v3/coins/\(id)?localization=fasle&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=true") else { return nil}
             
             let configuration = URLSessionConfiguration.ephemeral
             let session = URLSession(configuration: configuration)
@@ -90,11 +104,12 @@ import SwiftUI
             
             let decodedResponse = try JSONDecoder().decode(Coin.self, from: data)
             
+            print("Fetched coin \(decodedResponse.name)")
             return decodedResponse
 
         // full info (e.g. detail view)
         } else {
-            guard let url = URL(string: "https://api.coingecko.com/api/v3/coins/\(id)?localization=false&tickers=true&market_data=true&community_data=true&developer_data=true&sparkline=false") else { return nil }
+            guard let url = URL(string: "https://api.coingecko.com/api/v3/coins/\(id)?localization=false&tickers=true&market_data=true&community_data=true&developer_data=true&sparkline=true") else { return nil }
             
             let configuration = URLSessionConfiguration.ephemeral
             let session = URLSession(configuration: configuration)
@@ -112,6 +127,7 @@ import SwiftUI
                 self.oldMarketData = decodedResponse.marketData
             }
             
+            print("Fetched coin \(decodedResponse.name)")
             return decodedResponse
         }
     }
@@ -122,6 +138,11 @@ import SwiftUI
     
     // MARK: fetch Top 10
     func fetchTop10Coins() async throws {
+        
+        if self.error != nil {
+            try await Task.sleep(nanoseconds: self.sleeptime)
+        }
+        
         guard let url = URL(string: "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d%2C30d%2C1y") else { return }
         
         let configuration = URLSessionConfiguration.ephemeral
@@ -137,6 +158,7 @@ import SwiftUI
         if let decodedResponse = try? JSONDecoder().decode([CoinPreview].self, from: data) {
             top10Coins = decodedResponse
         }
+        print("Fetched top 10 Coins")
         syncTop10andWatchlist()
     }
     
@@ -153,6 +175,11 @@ import SwiftUI
     
     // MARK: fetch Watchlist
     func fetchWatchlist() async throws {
+        
+        if self.error != nil {
+            try await Task.sleep(nanoseconds: self.sleeptime)
+        }
+        
         for i in watchlist {
             // only fetch those that are not in (synced with) top 10
             if top10Coins.firstIndex(where: { $0.id == i.id } ) != nil {
@@ -178,8 +205,8 @@ import SwiftUI
     
     // MARK: add to watchlist
     
-    // add to watchlist from top 10 (CoinPreview -> CoinPreview)
-    func addToWatchlistFromTop10(_ coin: CoinPreview) {
+    // add to watchlist
+    func addToWatchlist(_ coin: CoinPreview) {
         if watchlist.contains(where: { $0.id == coin.id } ) {
             return
         } else {
@@ -200,6 +227,11 @@ import SwiftUI
     
     // fetch coin, transform it for preview and replace placeholder with it
     func addToWatchListFromSearch(id: String) async throws {
+        
+        if self.error != nil {
+            try await Task.sleep(nanoseconds: self.sleeptime)
+        }
+        
         do {
             let coin = try await fetchCoin(id: id, forPreview: true)
             
@@ -224,6 +256,15 @@ import SwiftUI
         }
     }
     
+    // MARK: remove from watchlist
+    func removeFromWatchlist<T: Identifiable>(_ coin: T) {
+        if watchlist.contains(where: { $0.id == coin.id as! String } ) {
+            watchlist.removeAll { $0.id == coin.id as! String }
+        } else {
+            return
+        }
+    }
+    
     // MARK: transform Coin to Coin_Preview
     func coinToCoinPreview(_ coin: Coin, currency: String = "usd") -> CoinPreview {
         return CoinPreview(
@@ -244,18 +285,16 @@ import SwiftUI
             priceChangePercentage7DInCurrency: coin.marketData.priceChangePercentage7DInCurrency?["\(currency)"])
     }
     
-    
-    // MARK: remove from watchlist
-    func removeFromWatchlist<T: Identifiable>(_ coin: T) {
-        if watchlist.contains(where: { $0.id == coin.id as! String } ) {
-            watchlist.removeAll { $0.id == coin.id as! String }
-        } else {
-            return
-        }
-    }
-    
     // MARK: Search for coins
     @MainActor func searchForCoins(_ word: String, currency: String = "usd") async {
+        
+        if self.error != nil {
+            do {
+                try await Task.sleep(nanoseconds: self.sleeptime)
+            } catch {
+                print("Failed to make search sleep while limit hit API")
+            }
+        }
         
         let query = word.trimmingCharacters(in: .whitespacesAndNewlines)
         
@@ -345,6 +384,11 @@ import SwiftUI
     
     // MARK: Fetch Global data
     func fetchGlobal() async throws {
+        
+        if self.error != nil {
+            try await Task.sleep(nanoseconds: self.sleeptime)
+        }
+        
         guard let url = URL(string: "https://api.coingecko.com/api/v3/global") else {
             return
         }
@@ -363,6 +407,8 @@ import SwiftUI
         withAnimation {
             self.globalData = decodedResponse
         }
+        
+        print("Fetched global data")
     }
     
     func getScaleEffect(index: Int) -> Double {
@@ -374,6 +420,10 @@ import SwiftUI
     }
     
     func fetchCoinChart(coinID: String, interval: String, isRefresh: Bool = false, currency: String = "usd") async throws -> [CoinChartData] {
+        
+        if self.error != nil {
+            try await Task.sleep(nanoseconds: self.sleeptime)
+        }
         
         if isRefresh == false {
             chartLoaded = false
@@ -394,7 +444,7 @@ import SwiftUI
             tempUrl = URL(string: "https://api.coingecko.com/api/v3/coins/\(coinID)/market_chart?vs_currency=\(currency)&days=365")
         }
         if interval == "All" {
-            tempUrl = URL(string: "https://api.coingecko.com/api/v3/coins/\(coinID)/market_chart?vs_currency=\(currency)&days=max")
+            tempUrl = URL(string: "https://api.coingecko.com/api/v3/coins/\(coinID)/market_chart?vs_currency=\(currency)&days=max&interval=monthly")
         }
         
         guard let url = tempUrl else { return [CoinChartData]() }
@@ -416,7 +466,12 @@ import SwiftUI
             tempArray.append(CoinChartData(date: Date(timeIntervalSince1970: (datePrice[0] / 1000.0)), price: datePrice[1]))
         }
         
+        if interval == "All" {
+            tempArray = tempArray.enumerated().compactMap { index, element in index % 7 == 0 ? element : nil }
+        }
+        
         chartLoaded = true
+        print("Fetched chart for \(coinID)")
         return tempArray
     }
     
@@ -428,8 +483,8 @@ import SwiftUI
         Task {
             do {
                 // fetch data on launch
-                try await fetchWatchlist()
                 try await fetchTop10Coins()
+                try await fetchWatchlist()
                 try await fetchGlobal()
             } catch {
                 print("Failed to fetch data on launch: \(error.localizedDescription)")

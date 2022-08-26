@@ -41,7 +41,13 @@ struct MarketView: View {
                             market.searchLengthIsEnough = false
                         }
                     }
-                    .errorAlert(error: $market.error)
+                    .onReceive(market.errorTimer) { time in
+                        guard market.error != nil else { return }
+                        
+                        if market.errorTime > 0 {
+                            market.errorTime -= 1
+                        }
+                    }
                 if network.connected == false {
                     ZStack {
                         colorScheme == .dark ?
@@ -121,10 +127,14 @@ struct MarketView: View {
                 }
             }
         }
-        .onReceive(market.coinsTimer) { time in
+        .errorAlert(error: $market.error, remainingTime: $market.errorTime)
+        .onReceive(market.marketTimer) { time in
+            guard market.marketTimerIsActive else {
+                return
+            }
             Task {
                 do {
-                    // fetch data every 20 seconds
+                    // fetch data every 30 seconds
                     try await market.fetchWatchlist()
                     try await market.fetchTop10Coins()
                     try await market.fetchGlobal()

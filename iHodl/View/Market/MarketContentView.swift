@@ -20,8 +20,8 @@ struct MarketContentView: View {
         ScrollView(showsIndicators: false) {
             ScrollViewReader { scrollProxy in
                 if isSearching == false {
+                    // MARK: Watchlist
                     VStack {
-                        // MARK: Watchlist
                         HStack {
                             Text(market.watchlistTitle)
                                 .font(.title2)
@@ -29,11 +29,13 @@ struct MarketContentView: View {
                             Spacer()
                         }
                         .padding()
+                        //MARK: Watchlist text about
                         if market.watchlist.isEmpty {
                             Text(market.watchlistAbout)
                                 .fontWeight(.light)
                                 .foregroundColor(.secondary)
                         } else {
+                        //MARK: Watchlist coins
                             VStack(spacing: 0) {
                                 HStack {
                                     Text("Coin")
@@ -55,6 +57,7 @@ struct MarketContentView: View {
                                     } label: {
                                         CoinPreviewView(coin: coin, interval: market.timeInterval)
                                         .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.22)
+                                        //MARK: Watchlist context menu
                                         .contextMenu {
                                             // remove coin from watchlist
                                             Button {
@@ -114,13 +117,14 @@ struct MarketContentView: View {
                                     } label: {
                                         CoinPreviewView(coin: coin, interval: market.timeInterval)
                                         .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.22)
+                                        //MARK: Top10 context menu
                                         .contextMenu {
                                             // "add coin to watchlist" option if coin is not already there
                                             if !market.watchlist.contains(where: { $0.id == coin.id } ) {
                                                 Button {
                                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                                         withAnimation {
-                                                            market.addToWatchlistFromTop10(coin)
+                                                            market.addToWatchlist(coin)
                                                         }
                                                     }
                                                 } label: {
@@ -235,6 +239,7 @@ struct MarketContentView: View {
                 }
             }
         }
+        //MARK: Pull to refresh
         .refreshable {
             Task {
                 do {
@@ -248,7 +253,7 @@ struct MarketContentView: View {
             }
         }
         .onChange(of: isSearching) { newValue in
-            // delete cached search results
+            //MARK: delete cached search results
             if newValue == false {
                 market.searchLengthIsEnough = false
                 market.searchedCoins = []

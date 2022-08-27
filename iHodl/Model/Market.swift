@@ -79,6 +79,7 @@ import SwiftUI
     
     // MARK: Chart
     @Published var chartLoaded = true
+    @Published var currentActiveItem: CoinChartData? = nil
     
     
     // MARK: Fetch Coin

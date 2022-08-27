@@ -28,6 +28,9 @@ struct CoinDetailView: View {
     //MARK: expanded chart
     @State private var expandedChart = false
     
+    //MARK: pricefinder
+    @State private var priceFinderActivated = false
+    
     //MARK: Market info
     @State private var marketInfoArray = [String]()
     
@@ -39,10 +42,29 @@ struct CoinDetailView: View {
             
             ScrollView {
                 VStack {
-                    // MARK: Chart
+                    
+                    //MARK: PriceViewer Info
+                    HStack {
+                        if let currentActiveItem = market.currentActiveItem {
+                            VStack(spacing: 5) {
+                                // price
+                                Text("\(currentActiveItem.price, specifier: "%.4f") $")
+                                    .fontWeight(.semibold)
+                                    .font(.system(size: 18))
+                                // date
+                                Text(createDateTime(timestamp: currentActiveItem.date, interval: market.chartTimePicker))
+                                    .foregroundColor(.secondary)
+                                    .fontWeight(.light)
+                                    .font(.system(size: 14))
+                            }
+                        }
+                    }
+                    .frame(minHeight: 20)
+                    
+                    //MARK: Chart
                     ZStack {
                         ZStack {
-                            // MARK: Chart
+                            //MARK: Chart
                             ZStack {
                                 ZStack {
                                     if market.chartLoaded == true {
@@ -51,7 +73,7 @@ struct CoinDetailView: View {
                                                 ScrollViewReader { scroll in
                                                     // MARK: chart
                                                     if coin != nil {
-                                                        ChartView(coin: coin!, data: chart, interval: market.chartTimePicker, expanded: expandedChart)
+                                                        ChartView(coin: coin!, data: chart, interval: market.chartTimePicker, expanded: expandedChart, type: .real, showDetailPrice: priceFinderActivated)
                                                             .frame(maxHeight: UIScreen.screenHeight * 0.25)
                                                             .padding(.horizontal, 5)
                                                             .frame(width: expandedChart ? geo.size.width * 3 : geo.size.width * 1, height: UIScreen.screenHeight * 0.3)
@@ -72,8 +94,21 @@ struct CoinDetailView: View {
                                             // MARK: chart bg
                                             .background(
                                                 Rectangle()
-                                                    .fill(colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light)
+                                                    .foregroundStyle(colorScheme == .dark ? LinearGradient.material02dark.shadow(.inner(color: priceFinderActivated ? Color.red : Color.black, radius: 10)) : LinearGradient.material02light.shadow(.inner(color: priceFinderActivated ? Color.red : Color.primary, radius: 10)))
                                             )
+                                            // sticky Y Axis labels if expanded chart
+                                            .overlay(
+                                                expandedChart ?
+                                                ChartView(coin: coin!, data: chart, interval: market.chartTimePicker, expanded: expandedChart, type: .overlayYAxis, showDetailPrice: false)
+                                                    .frame(maxHeight: UIScreen.screenHeight * 0.229)
+                                                    .padding(.horizontal, 5)
+                                                    .padding(.bottom, 17)
+                                                    .allowsHitTesting(false)
+                                                :
+                                                nil
+                                            )
+                                            // disable scrolling when priceFinder mode is on
+                                            .environment(\.isScrollEnabled, priceFinderActivated ? false : true)
                                         }
                                     }
                                 }
@@ -112,6 +147,22 @@ struct CoinDetailView: View {
                                 .pickerStyle(.segmented)
                                 .frame(width: UIScreen.screenWidth * 0.7, height: 16)
                                 .padding(.trailing)
+                                
+                                Button {
+                                    withAnimation {
+                                        priceFinderActivated.toggle()
+                                    }
+                                } label: {
+                                    Image(systemName: priceFinderActivated ? "xmark.square" : "dot.viewfinder")
+                                        .foregroundColor(priceFinderActivated ? Color.red : Color.primary)
+                                        .background(
+                                            Circle()
+                                                .fill(colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light)
+                                                .frame(width: 32, height: 32)
+                                        )
+                                }
+                                .padding(.trailing)
+                                .shadow(radius: priceFinderActivated ? 1 : 0)
                                 
                                 Button {
                                     withAnimation {

@@ -82,3 +82,36 @@ extension Double {
         return truncatingRemainder(dividingBy: 1) == 0 ? String(format: "%.0f", self) : String(self)
     }
 }
+
+func createDateTime(timestamp: Date, interval: String) -> String {
+    let dateFormatter = DateFormatter()
+    let timezone = TimeZone.current.abbreviation() ?? "CET"  // get current TimeZone abbreviation or set to CET
+    dateFormatter.timeZone = TimeZone(abbreviation: timezone) //Set timezone that you want
+    dateFormatter.locale = NSLocale.current
+    if interval == "1D" {
+        dateFormatter.dateFormat = "EEEE dd, HH:mm" //Specify your format that you want
+    }
+    if interval == "7D" {
+        dateFormatter.dateFormat = "EEEE dd, HH:mm" //Specify your format that you want
+    }
+    if interval == "30D" {
+        dateFormatter.dateFormat = "EEEE, MMMM dd" //Specify your format that you want
+    }
+    if interval == "1Y" {
+        dateFormatter.dateFormat = "MMMM dd, YYYY" //Specify your format that you want
+    }
+    if interval == "All" {
+        dateFormatter.dateFormat = "MMMM dd, YYYY" //Specify your format that you want
+    }
+    var strDate = dateFormatter.string(from: timestamp)
+       
+    strDate = strDate.capitalizingFirstLetter()
+    
+    return strDate
+}
+
+extension String {
+    func capitalizingFirstLetter() -> String {
+        return prefix(1).capitalized + dropFirst()
+    }
+}

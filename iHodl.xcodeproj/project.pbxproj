@@ -136,6 +136,7 @@
 				E3882502288F1B8C0002E9CB /* MainView.swift */,
 				E39A198328A3F29D00E363DF /* Colors.swift */,
 				E39A198928A45F1B00E363DF /* Market */,
+				E36D9D5628B2D1500040A24D /* SettingsView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -150,7 +151,6 @@
 				E311E37028B94F6A00DF188D /* CoinDetail */,
 				E3294A0A28A5AE9F00CC4BDC /* SparklineView.swift */,
 				E3294A0828A591E400CC4BDC /* LineGraphView.swift */,
-				E36D9D5628B2D1500040A24D /* SettingsView.swift */,
 				E36D9D5828B2DEE30040A24D /* SearchedCoinView.swift */,
 			);
 			path = Market;

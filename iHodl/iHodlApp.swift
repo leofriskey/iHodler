@@ -10,7 +10,6 @@ import SwiftUI
 @main
 struct iHodlApp: App {
     
-    @StateObject private var viewRouter = ViewRouter()
     @StateObject private var network = Network()
     
     // views
@@ -18,8 +17,7 @@ struct iHodlApp: App {
     
     var body: some Scene {
         WindowGroup {
-            BaseView()
-                .environmentObject(viewRouter)
+            MainView()
                 .environmentObject(network)
                 .environmentObject(market)
         }

@@ -488,7 +488,7 @@ struct CoinDetailView: View {
                                 }
                         }
                     }
-                    .padding(.horizontal)
+                    .padding()
                     
                     // MARK: Price
                     if let coin {
@@ -518,27 +518,58 @@ struct CoinDetailView: View {
                                 }
                             }
                     }
-                    Spacer()
+                    
+                    // Spacer
+                    Color.clear
+                        .frame(height: UIScreen.screenHeight * 0.04)
                     
                     //MARK: Market info
                     if let coin {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 20) {
-                                // Volume 1D
-                                InfoCardsView(coin: coin, type: .volume)
-                                // Market Cap
-                                InfoCardsView(coin: coin, type: .marketCap)
-                                // Circulating Supply
-                                InfoCardsView(coin: coin, type: .supply)
+                        VStack(alignment: .leading) {
+                            Text("Stats")
+                                .font(.title3)
+                                .padding(.horizontal)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 20) {
+                                    // Volume 1D
+                                    InfoCardsView(coin: coin, type: .volume)
+                                    // Market Cap
+                                    InfoCardsView(coin: coin, type: .marketCap)
+                                    // Circulating Supply
+                                    InfoCardsView(coin: coin, type: .supply)
+                                }
+                                .padding(.horizontal)
                             }
-                            .padding()
                         }
                     }
                     
-                    //MARK: Notifications
-                    //
+                    // Spacer
+                    Color.clear
+                        .frame(height: UIScreen.screenHeight * 0.04)
                     
-                    Spacer()
+                    //MARK: Links
+                    if let coin {
+                        VStack(alignment: .leading) {
+                            Text("Links")
+                                .font(.title3)
+                                .padding(.horizontal)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 12) {
+                                    if let websiteURL = coin.links?.homepage?[0] {
+                                        LinkView(type: .website, url: websiteURL)
+                                    }
+                                    if let sourceCodeURL = coin.links?.reposURL?.github?[0] {
+                                        LinkView(type: .sourcecode, url: sourceCodeURL)
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.horizontal)
+                            }
+                        }
+                    }
+                    // Spacer
+                    Color.clear
+                        .frame(height: UIScreen.screenHeight * 0.1)
                 }
                 .task {
                     do {
@@ -612,12 +643,7 @@ struct CoinDetailView: View {
                         }
                     } label: {
                         Image(systemName: market.watchlist.contains(where: { $0.id == coin?.id } ) ? "star.slash.fill" : "star")
-                    }
-                    //MARK: Add Notification
-                    Button {
-                        //
-                    } label: {
-                        Image(systemName: "bell")
+                            .font(.system(size: 14))
                     }
                 }
             }

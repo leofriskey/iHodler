@@ -56,7 +56,7 @@ struct MarketContentView: View {
                                         CoinDetailView(anyCoin: coin)
                                     } label: {
                                         CoinPreviewView(coin: coin, interval: market.timeInterval)
-                                        .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.22)
+                                        .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.23)
                                         //MARK: Watchlist context menu
                                         .contextMenu {
                                             // remove coin from watchlist
@@ -116,7 +116,7 @@ struct MarketContentView: View {
                                         CoinDetailView(anyCoin: coin)
                                     } label: {
                                         CoinPreviewView(coin: coin, interval: market.timeInterval)
-                                        .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.22)
+                                        .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.23)
                                         //MARK: Top10 context menu
                                         .contextMenu {
                                             // "add coin to watchlist" option if coin is not already there

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MainView: View {
-    @EnvironmentObject private var viewRouter: ViewRouter
+    @StateObject private var settings = Settings()
     @Environment(\.colorScheme) private var colorScheme
     @State private var selectedTab = 0
     
@@ -36,6 +36,7 @@ struct MainView: View {
                     Label("Settings", systemImage: "gear")
                 }
                 .tag(1)
+                .environmentObject(settings)
         }
         .accentColor(.primary)
     }
@@ -43,6 +44,6 @@ struct MainView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        MainView().environmentObject(ViewRouter())
+        MainView()
     }
 }

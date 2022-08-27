@@ -105,18 +105,6 @@ struct InfoCardsView: View {
                             Text("/ \(Int(maxSupply)) \(coin.symbol.uppercased())")
                                 .font(.system(size: 14))
                                 .foregroundColor(.secondary)
-//                            HStack {
-//                                RoundedRectangle(cornerRadius: 4)
-//                                    .fill(.ultraThinMaterial)
-//                                    .frame(width: 120, height: 5)
-//                                    .overlay(alignment: .leading, content: {
-//                                        RoundedRectangle(cornerRadius: 4)
-//                                            .fill(colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
-//                                            .frame(width: 120 * (supply / maxSupply), height: 5)
-//                                    })
-//                                Text("\(Int(Double(supply) / Double(maxSupply))) %")
-//                                    .font(.system(size: 14))
-//                            }
                         }
                     } else {
                         Text(market.noData)
@@ -130,8 +118,19 @@ struct InfoCardsView: View {
             }
             .frame(height: 80)
             .background(
-                RoundedRectangle(cornerRadius: 18)
-                    .fill(colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light)
+                ZStack(alignment: .bottom) {
+                    RoundedRectangle(cornerRadius: 18)
+                        .fill(colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light)
+                    if let supply = coin.marketData.circulatingSupply {
+                        if let maxSupply = coin.marketData.maxSupply {
+                            RoundedRectangle(cornerRadius: 18)
+                                .frame(height: 80)
+                                .mask(alignment: .bottom, {
+                                    colorScheme == .dark ? LinearGradient.material02dark.frame(height: 80 * (supply / maxSupply)) : LinearGradient.material02light.frame(height: 80 * (supply / maxSupply))
+                                })
+                        }
+                    }
+                }
             )
         }
     }

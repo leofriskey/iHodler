@@ -116,14 +116,6 @@ struct MarketView: View {
                     }
                     .pickerStyle(.segmented)
                     .disabled(network.connected == false ? true : false)
-                    // MARK: price notifications
-                    Button {
-                        // price notifications
-                    } label: {
-                        Image(systemName: "bell.badge.fill")
-                            .font(.system(size: 14))
-                            .foregroundColor(.primary)
-                    }
                 }
             }
         }

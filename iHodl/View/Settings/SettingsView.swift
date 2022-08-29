@@ -5,13 +5,50 @@
 //  Created by Leo Friskey on 22.08.2022.
 //
 
+import StoreKit
 import SwiftUI
 import Combine
 
 struct SettingsView: View, Themeable {
     @Environment(\.colorScheme) internal var colorScheme
+    @Environment(\.requestReview) var requestReview
     @EnvironmentObject private var settings: Settings
     @EnvironmentObject private var market: Market
+    
+    private var githubImage: some View {
+        Image("github")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 24, height: 24)
+            .background(
+                Circle()
+                    .fill(Material05)
+                    .frame(width: 32, height: 32)
+            )
+    }
+    
+    private var telegramImage: some View {
+        Image("telegram")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 24, height: 24)
+            .background(
+                Circle()
+                    .fill(Material05)
+                    .frame(width: 32, height: 32)
+            )
+    }
+    private var linkedInImage: some View {
+        Image("linkedIn")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 20, height: 20)
+            .background(
+                Circle()
+                    .fill(Material05)
+                    .frame(width: 32, height: 32)
+            )
+    }
     
     var body: some View {
         NavigationStack {
@@ -21,8 +58,16 @@ struct SettingsView: View, Themeable {
                 
                 ScrollView {
                     VStack {
+                        
+                        // Spacer
+                        ZStack(alignment: .top) {
+                            Color.clear
+                                .frame(height: UIScreen.screenHeight * 0.01)
+                        }
+                        
+                        //MARK: Defaults
                         HStack {
-                            Text("Defaults")
+                            Text(settings.defaultsTitle)
                                 .font(.title2)
                                 .fontWeight(.light)
                             Spacer()
@@ -32,7 +77,7 @@ struct SettingsView: View, Themeable {
                         VStack(spacing: 18) {
                             //MARK: Currency
                             OptionView {
-                                Text("Currency")
+                                Text(settings.currencyTitle)
                                     .font(.system(size: 18))
                                     .fontWeight(.bold)
                                 Spacer()
@@ -69,7 +114,7 @@ struct SettingsView: View, Themeable {
                             
                             //MARK: Language
                             OptionView {
-                                Text("Language")
+                                Text(settings.languageTitle)
                                     .font(.system(size: 18))
                                     .fontWeight(.bold)
                                 Spacer()
@@ -80,9 +125,6 @@ struct SettingsView: View, Themeable {
                                 }
                                 .pickerStyle(.menu)
                                 .tint(.blue)
-                                //                            .onChange(of: settings.currency) { newCurrency in
-                                //                                market.connect(settings.$currencyUpdater.eraseToAnyPublisher())
-                                //                            }
                                 ZStack {
                                     Circle()
                                         .fill(Material05)
@@ -95,7 +137,7 @@ struct SettingsView: View, Themeable {
                             
                             //MARK: Theme
                             OptionView {
-                                Text("Theme")
+                                Text(settings.themeTitle)
                                     .font(.system(size: 18))
                                     .fontWeight(.bold)
                                 Spacer()
@@ -124,12 +166,117 @@ struct SettingsView: View, Themeable {
                             }
                         }
                         
+                        // Spacer
+                        Color.clear
+                            .frame(height: UIScreen.screenHeight * 0.05)
+                        
+                        //MARK: Support app
+                        HStack {
+                            Text(settings.supportAppTitle)
+                                .font(.title2)
+                                .fontWeight(.light)
+                            Spacer()
+                        }
+                        .padding([.horizontal, .top])
+                        
+                        VStack(spacing: 18) {
+                            //MARK: Rate on App Store
+                            Button {
+                                requestReview()
+                            } label: {
+                                OptionView {
+                                    Text(settings.rateAppTitle)
+                                        .font(.system(size: 18))
+                                        .fontWeight(.bold)
+                                }
+                            }
+                            
+                            //MARK: Contribute on GitHub
+                            Link(destination: URL(string: "https://github.com/leofriskey/iHodl")!) {
+                                OptionView {
+                                    Text(settings.githubTitle)
+                                        .font(.system(size: 18))
+                                        .fontWeight(.bold)
+                                    Spacer()
+                                    githubImage
+                                }
+                            }
+                            
+                            //MARK: Donate
+                            OptionView {
+                                Text(settings.donateTitle)
+                                    .font(.system(size: 18))
+                                    .fontWeight(.bold)
+                                VStack(alignment: .leading) {
+                                    Text("bitcoin:")
+                                        .fontWeight(.light)
+                                        .font(.system(size: 14))
+                                    Text(settings.btcAddress)
+                                        .lineLimit(1)
+                                        .font(.caption)
+                                }
+                                .padding(.horizontal, 5)
+                                Button("\(settings.language == "en" ? "Copy" : "Копировать")") {
+                                    settings.copyToClipboard(settings.btcAddress)
+                                }
+                                .tint(.blue)
+                            }
+                        }
+                        
+                        // Spacer
+                        Color.clear
+                            .frame(height: UIScreen.screenHeight * 0.05)
+                        
+                        //MARK: Contact me
+                        HStack {
+                            Text(settings.contactMeTitle)
+                                .font(.title2)
+                                .fontWeight(.light)
+                            Spacer()
+                        }
+                        .padding([.horizontal, .top])
+                        
+                        VStack(spacing: 18) {
+                            //MARK: Social links
+                            OptionView {
+                                Text(settings.socialLinks)
+                                    .font(.system(size: 18))
+                                    .fontWeight(.bold)
+                                Spacer()
+                                //MARK: Telegram
+                                Link(destination: URL(string: "https://t.me/leofriskey")!) {
+                                    telegramImage
+                                }
+                                .padding(.trailing, 15)
+                                //MARK: LinkedIn
+                                Link(destination: URL(string: "https://www.linkedin.com/in/leofriskey/")!) {
+                                    linkedInImage
+                                }
+                                .padding(.trailing, 15)
+                                //MARK: GitHub
+                                Link(destination: URL(string: "https://github.com/leofriskey")!) {
+                                    githubImage
+                                }
+                            }
+                        }
+                        
+                        // Spacer
+                        Color.clear
+                            .frame(height: UIScreen.screenHeight * 0.1)
                         
                     }
                 }
             }
-            .navigationTitle("Settings")
+            .navigationTitle(settings.settingsTitle)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Link("Data from CoinGecko", destination: URL(string: "https://www.coingecko.com/api")!)
+                        .fontWeight(.light)
+                        .font(.caption)
+                }
+            }
         }
+        .copySuccessPopover(settings.showCopyPopover, label: settings.btcCopiedLabel)
     }
 }
 

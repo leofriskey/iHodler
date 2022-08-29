@@ -16,19 +16,26 @@ struct WatchlistCoinsView: View, Themeable {
     let watchlistID: String
     
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Text("Coin")
+        VStack(alignment: .custom, spacing: 0) {
+            HStack(alignment: .center) {
+                Text(settings.coinCaption)
                     .fontWeight(.light)
                     .font(.caption)
                 Spacer()
-                Text("Price")
+                Text(settings.priceCaption)
                     .fontWeight(.light)
                     .font(.caption)
+                    .alignmentGuide(.custom) { $0[HorizontalAlignment.center] } // <- always center Price
                 Spacer()
-                Text("\(market.marketInterval) %")
-                    .fontWeight(.light)
-                    .font(.caption)
+                if market.marketInterval == "1D" {
+                    Text("\(settings.d1Title) %")
+                        .fontWeight(.light)
+                        .font(.caption)
+                } else {
+                    Text("\(settings.d7Title) %")
+                        .fontWeight(.light)
+                        .font(.caption)
+                }
             }
             .frame(maxWidth: UIScreen.screenWidth * 0.8)
             ForEach(market.watchlist.sorted { ($0.marketCapRank ?? 0) < ($1.marketCapRank ?? 1) }) { coin in
@@ -47,7 +54,7 @@ struct WatchlistCoinsView: View, Themeable {
                                 }
                             }
                         } label: {
-                            Label("Remove from watchlist", systemImage: "star.slash.fill")
+                            Label(settings.removeFromWatchlistTitle, systemImage: "star.slash.fill")
                         }
                     } preview: {
                         CoinPreviewView(coin: coin, interval: market.marketInterval)

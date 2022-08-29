@@ -24,7 +24,7 @@ struct MainView: View {
 //                .tag(0)
             MarketView()
                 .tabItem {
-                    Label("Market", systemImage: "chart.xyaxis.line")
+                    Label(settings.marketTitle, systemImage: "chart.xyaxis.line")
                 }
                 .tag(0)
             /// coming soon...
@@ -35,7 +35,7 @@ struct MainView: View {
 //                .tag(2)
             SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gear")
+                    Label(settings.settingsTitle, systemImage: "gear")
                 }
                 .tag(1)
         }

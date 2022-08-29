@@ -85,6 +85,14 @@
 			path = CoinDetail;
 			sourceTree = "<group>";
 		};
+		E36AD0D928BCD47A007EF252 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				E39A198528A4134000E363DF /* Helper.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		E38824E6288F19990002E9CB = {
 			isa = PBXGroup;
 			children = (
@@ -105,7 +113,7 @@
 			isa = PBXGroup;
 			children = (
 				E38824F2288F19990002E9CB /* iHodlApp.swift */,
-				E39A198528A4134000E363DF /* Helper.swift */,
+				E36AD0D928BCD47A007EF252 /* Helpers */,
 				E3882504288F1BA70002E9CB /* Model */,
 				E3882505288F1BB40002E9CB /* View */,
 				E38824F6288F199A0002E9CB /* Assets.xcassets */,

@@ -10,6 +10,7 @@ import SwiftUI
 struct GlobalView: View, Themeable {
     
     @EnvironmentObject private var market: Market
+    @EnvironmentObject private var settings: Settings
     @Environment(\.colorScheme) internal var colorScheme
     
     @State private var xOffsets: [CGFloat] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -140,8 +141,10 @@ struct GlobalView: View, Themeable {
                 //MARK: Picker
                 Picker("Global statistics", selection: $market.gcPicker) {
                     ForEach(market.gcValues, id: \.self) { item in
-                        Text(item)
-                            .font(.caption2)
+                        if item == "Overview" {
+                            Text(settings.globalTitle)
+                                .font(.caption2)
+                        }
                     }
                 }
                 .pickerStyle(.segmented)
@@ -151,17 +154,19 @@ struct GlobalView: View, Themeable {
             //MARK: Caption
             if market.gcPicker == "Overview" {
                 if market.marketInterval == "1D" {
-                    Text("Price change 1D %")
+                    Text("\(settings.globalCaption) \(settings.d1Title) %")
                         .fontWeight(.light)
                         .font(.caption2)
                         .shadow(radius: 1)
-                        .padding([.top, .leading], 20)
+                        .padding(.top, 20)
+                        .padding(.leading, 10)
                 } else {
-                    Text("Price change 7D %")
+                    Text("\(settings.globalCaption) \(settings.d7Title) %")
                         .fontWeight(.light)
                         .font(.caption2)
                         .shadow(radius: 1)
-                        .padding([.top, .leading], 20)
+                        .padding(.top, 20)
+                        .padding(.leading, 10)
                 }
             }
         }

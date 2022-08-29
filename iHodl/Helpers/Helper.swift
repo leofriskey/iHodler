@@ -58,6 +58,25 @@ extension View {
             }
         }
     }
+    
+    func copySuccessPopover(_ visible: Bool, label: String) -> some View {
+        
+        return self
+                .overlay(
+                    visible ?
+                    VStack {
+                        Spacer()
+                        Text(label)
+                            .padding(10)
+                            .background(
+                                RoundedRectangle(cornerRadius: 24)
+                                    .fill(.ultraThinMaterial)
+                            )
+                    }
+                    :
+                    nil
+                )
+    }
 }
 
 //MARK: Localized Error
@@ -135,4 +154,15 @@ extension Double {
         
         return result
     }
+}
+
+//MARK: center 'Price' caption in Watchlist and Top10
+extension HorizontalAlignment {
+    struct CustomAlignment: AlignmentID {
+        static func defaultValue(in context: ViewDimensions) -> CGFloat {
+            return context[HorizontalAlignment.center]
+        }
+    }
+
+    static let custom = HorizontalAlignment(CustomAlignment.self)
 }

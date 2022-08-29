@@ -25,7 +25,7 @@ struct InfoCardsView: View, Themeable {
         case .volume:
             VStack(spacing: 5) {
                 HStack {
-                    Text("Volume 1D")
+                    Text(settings.volume1DTitle)
                         .font(.system(size: 14))
                         .fontWeight(.light)
                     Spacer()
@@ -58,7 +58,7 @@ struct InfoCardsView: View, Themeable {
         case .marketCap:
             VStack(spacing: 5) {
                 HStack {
-                    Text("Market Cap")
+                    Text(settings.marketCapTitle)
                         .font(.system(size: 14))
                         .fontWeight(.light)
                     Spacer()
@@ -69,9 +69,15 @@ struct InfoCardsView: View, Themeable {
                         Text("\(marketCap.formatAsPrice(currency: market.currency, afterZero: 0))")
                             .font(.system(size: 16))
                         if let marketCapRank = coin.marketCapRank {
-                            Text("rank \(marketCapRank)")
-                                .font(.system(size: 14))
-                                .foregroundColor(.secondary)
+                            if settings.language == "en" {
+                                Text("rank \(marketCapRank)")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.secondary)
+                            } else {
+                                Text("\(marketCapRank) место")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.secondary)
+                            }
                         }
                     } else {
                         Text(settings.noData)
@@ -91,7 +97,7 @@ struct InfoCardsView: View, Themeable {
         case .supply:
             VStack(spacing: 5) {
                 HStack {
-                    Text("Circulating Supply")
+                    Text(settings.circulatingSupplyTitle)
                         .font(.system(size: 14))
                         .fontWeight(.light)
                     Spacer()

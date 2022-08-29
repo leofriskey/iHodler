@@ -89,7 +89,7 @@ struct CoinDetailView: View, Themeable {
                     //MARK: Market info
                     if let coin {
                         VStack(alignment: .leading) {
-                            Text("Stats")
+                            Text(settings.statsTitle)
                                 .font(.title3)
                                 .padding(.horizontal)
                             ScrollView(.horizontal, showsIndicators: false) {
@@ -113,7 +113,7 @@ struct CoinDetailView: View, Themeable {
                     //MARK: Links
                     if let coin {
                         VStack(alignment: .leading) {
-                            Text("Links")
+                            Text(settings.linksTitle)
                                 .font(.title3)
                                 .padding(.horizontal)
                             ScrollView(.horizontal, showsIndicators: false) {
@@ -320,7 +320,17 @@ struct CoinDetailView: View, Themeable {
                     Spacer()
                     Picker("Chart time interval", selection: $market.chartTimePicker) {
                         ForEach(market.chartTimeIntervals, id: \.self) { interval in
-                            Text(interval)
+                            if interval == "1D" {
+                                Text(settings.d1Title)
+                            } else if interval == "7D" {
+                                Text(settings.d7Title)
+                            } else if interval == "30D" {
+                                Text(settings.d30Title)
+                            } else if interval == "1Y" {
+                                Text(settings.y1Title)
+                            } else {
+                                Text(settings.allTitle)
+                            }
                         }
                     }
                     .onChange(of: market.chartTimePicker) { _ in

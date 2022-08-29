@@ -39,6 +39,7 @@ struct MarketContentView: View, Themeable {
                             Text(settings.watchlistAbout)
                                 .fontWeight(.light)
                                 .foregroundColor(.secondary)
+                                .padding(.horizontal, 10)
                         } else {
                             //MARK: Watchlist coins
                             WatchlistCoinsView(watchlistID: watchlistID)

@@ -16,19 +16,26 @@ struct Top10CoinsView: View, Themeable {
     @EnvironmentObject private var settings: Settings
     
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .custom, spacing: 0) {
             HStack {
-                Text("Coin")
+                Text(settings.coinCaption)
                     .fontWeight(.light)
                     .font(.caption)
                 Spacer()
-                Text("Price")
+                Text(settings.priceCaption)
                     .fontWeight(.light)
                     .font(.caption)
+                    .alignmentGuide(.custom) { $0[HorizontalAlignment.center] } // <- always center Price
                 Spacer()
-                Text("\(market.marketInterval) %")
-                    .fontWeight(.light)
-                    .font(.caption)
+                if market.marketInterval == "1D" {
+                    Text("\(settings.d1Title) %")
+                        .fontWeight(.light)
+                        .font(.caption)
+                } else {
+                    Text("\(settings.d7Title) %")
+                        .fontWeight(.light)
+                        .font(.caption)
+                }
             }
             .frame(maxWidth: UIScreen.screenWidth * 0.8)
             VStack(spacing: 20) {

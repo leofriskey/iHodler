@@ -17,6 +17,7 @@ struct LinkView: View, Themeable {
     let url: String
     
     @Environment(\.colorScheme) internal var colorScheme
+    @EnvironmentObject private var settings: Settings
     
     var body: some View {
         switch type {
@@ -72,7 +73,7 @@ struct LinkView: View, Themeable {
                 Image(systemName: "ellipsis.curlybraces")
                     .font(.system(size: 14))
                 if let webURL = URL(string: url) {
-                    Link("Source code", destination: webURL)
+                    Link(settings.sourceCodeTitle, destination: webURL)
                         .font(.system(size: 14))
                 } else {
                     Text("no data")

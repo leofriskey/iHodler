@@ -27,7 +27,7 @@ struct MarketView: View, Themeable {
                 
                 //MARK: Main content
                 MarketContentView()
-                    .searchable(text: $market.searchText, placement: .navigationBarDrawer(displayMode: .always))
+                    .searchable(text: $market.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: settings.searchPrompt)
                     .disabled(network.connected == false ? true : false)
                     .blur(radius: network.connected == false ? 7 : 0)
                     .onSubmit(of: .search) {
@@ -81,7 +81,11 @@ struct MarketView: View, Themeable {
                     //MARK: time interval
                     Picker("Choose time interval: 1 day or 7 days", selection: $market.marketInterval) {
                         ForEach(market.marketIntervals, id: \.self) { interval in
-                            Text(interval)
+                            if interval == "1D" {
+                                Text(settings.d1Title)
+                            } else {
+                                Text(settings.d7Title)
+                            }
                         }
                     }
                     .pickerStyle(.segmented)

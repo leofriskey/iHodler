@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct GlobalView: View {
+struct GlobalView: View, Themeable {
     
     @EnvironmentObject private var market: Market
-    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.colorScheme) internal var colorScheme
     
     @State private var xOffsets: [CGFloat] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     @State private var yOffsets: [CGFloat] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -29,22 +29,17 @@ struct GlobalView: View {
         ZStack(alignment: .topLeading) {
             ZStack(alignment: .topTrailing) {
                 ZStack(alignment: .topTrailing) {
-                    // MARK: BG
-                    (colorScheme == .dark ?
-                     LinearGradient.material02dark
+                    //MARK: BG
+                    Material02
                         .clipShape(Rectangle())
                         .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.2)
-                    :
-                    LinearGradient.material02light
-                        .clipShape(Rectangle())
-                        .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.2))
                     // check if global data is here
                     if market.globalData != nil {
-                        // MARK: "Overview"
+                        //MARK: "Overview"
                         if market.gcPicker == "Overview" {
                            
-                            // MARK: 1D
-                            if market.timeInterval == "1D" {
+                            //MARK: 1D
+                            if market.marketInterval == "1D" {
                                 LazyHGrid(rows: rows) {
                                     ForEach(0..<10) { num in
                                         ZStack {
@@ -79,7 +74,7 @@ struct GlobalView: View {
                                         yOffsets = [20.0, 20.0, -15.0, 5.0, -25.0, -20.0, 0.0, 10.0, -15.0, 20.0]
                                     }
                                 }
-                            // MARK: 7D
+                            //MARK: 7D
                             } else {
                                 LazyHGrid(rows: rows) {
                                     ForEach(0..<10) { num in
@@ -134,7 +129,7 @@ struct GlobalView: View {
                 .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.2)
                 .clipShape(Rectangle())
                 // animate change of time interval
-                .onChange(of: market.timeInterval) { newValue in
+                .onChange(of: market.marketInterval) { newValue in
                     darken = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         withAnimation(.easeInOut(duration: 0.7)) {
@@ -142,7 +137,7 @@ struct GlobalView: View {
                         }
                     }
                 }
-                // MARK: Picker
+                //MARK: Picker
                 Picker("Global statistics", selection: $market.gcPicker) {
                     ForEach(market.gcValues, id: \.self) { item in
                         Text(item)
@@ -153,9 +148,9 @@ struct GlobalView: View {
                 .frame(width: 80, height: 12) // width: 280 (3 options)
                 .offset(x: -10)
             }
-            // MARK: Caption
+            //MARK: Caption
             if market.gcPicker == "Overview" {
-                if market.timeInterval == "1D" {
+                if market.marketInterval == "1D" {
                     Text("Price change 1D %")
                         .fontWeight(.light)
                         .font(.caption2)

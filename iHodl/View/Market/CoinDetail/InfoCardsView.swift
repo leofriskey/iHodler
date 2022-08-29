@@ -11,14 +11,14 @@ enum InfoCards {
     case volume, marketCap, supply
 }
 
-struct InfoCardsView: View {
+struct InfoCardsView: View, Themeable {
     
     @EnvironmentObject private var market: Market
-    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var settings: Settings
+    @Environment(\.colorScheme) internal var colorScheme
     
     let coin: Coin
     let type: InfoCards
-    let currency = "usd"
     
     var body: some View {
         switch type {
@@ -32,8 +32,8 @@ struct InfoCardsView: View {
                 }
                 .padding([.leading, .top], 10)
                 VStack {
-                    if let fiatVolume = coin.marketData.totalVolume?[currency] {
-                        Text("\(fiatVolume.formatted(.currency(code: currency)))")
+                    if let fiatVolume = coin.marketData.totalVolume?[market.currency] {
+                        Text("\(fiatVolume.formatAsPrice(currency: market.currency, afterZero: 0))")
                             .font(.system(size: 16))
                         if let cryptoVolume = coin.marketData.totalVolume?[coin.symbol.lowercased()] {
                             Text("\(Int(cryptoVolume)) \(coin.symbol.uppercased())")
@@ -41,7 +41,7 @@ struct InfoCardsView: View {
                                 .foregroundColor(.secondary)
                         }
                     } else {
-                        Text(market.noData)
+                        Text(settings.noData)
                             .fontWeight(.light)
                             .foregroundColor(.secondary)
                     }
@@ -53,7 +53,7 @@ struct InfoCardsView: View {
             .frame(height: 80)
             .background(
                 RoundedRectangle(cornerRadius: 18)
-                    .fill(colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light)
+                    .fill(Material02)
             )
         case .marketCap:
             VStack(spacing: 5) {
@@ -65,8 +65,8 @@ struct InfoCardsView: View {
                 }
                 .padding([.leading, .top], 10)
                 VStack {
-                    if let marketCap = coin.marketData.marketCap?[currency] {
-                        Text("\(marketCap.formatted(.currency(code: currency)))")
+                    if let marketCap = coin.marketData.marketCap?[market.currency] {
+                        Text("\(marketCap.formatAsPrice(currency: market.currency, afterZero: 0))")
                             .font(.system(size: 16))
                         if let marketCapRank = coin.marketCapRank {
                             Text("rank \(marketCapRank)")
@@ -74,7 +74,7 @@ struct InfoCardsView: View {
                                 .foregroundColor(.secondary)
                         }
                     } else {
-                        Text(market.noData)
+                        Text(settings.noData)
                             .fontWeight(.light)
                             .foregroundColor(.secondary)
                     }
@@ -86,7 +86,7 @@ struct InfoCardsView: View {
             .frame(height: 80)
             .background(
                 RoundedRectangle(cornerRadius: 18)
-                    .fill(colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light)
+                    .fill(Material02)
             )
         case .supply:
             VStack(spacing: 5) {
@@ -107,7 +107,7 @@ struct InfoCardsView: View {
                                 .foregroundColor(.secondary)
                         }
                     } else {
-                        Text(market.noData)
+                        Text(settings.noData)
                             .fontWeight(.light)
                             .foregroundColor(.secondary)
                     }
@@ -120,13 +120,13 @@ struct InfoCardsView: View {
             .background(
                 ZStack(alignment: .bottom) {
                     RoundedRectangle(cornerRadius: 18)
-                        .fill(colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light)
+                        .fill(Material02)
                     if let supply = coin.marketData.circulatingSupply {
                         if let maxSupply = coin.marketData.maxSupply {
                             RoundedRectangle(cornerRadius: 18)
                                 .frame(height: 80)
                                 .mask(alignment: .bottom, {
-                                    colorScheme == .dark ? LinearGradient.material02dark.frame(height: 80 * (supply / maxSupply)) : LinearGradient.material02light.frame(height: 80 * (supply / maxSupply))
+                                    Material02.frame(height: 80 * (supply / maxSupply))
                                 })
                         }
                     }

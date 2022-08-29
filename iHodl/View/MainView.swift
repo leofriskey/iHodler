@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct MainView: View {
+    
     @StateObject private var settings = Settings()
+    
     @Environment(\.colorScheme) private var colorScheme
     @State private var selectedTab = 0
     
@@ -36,8 +38,8 @@ struct MainView: View {
                     Label("Settings", systemImage: "gear")
                 }
                 .tag(1)
-                .environmentObject(settings)
         }
+        .environmentObject(settings)
         .accentColor(.primary)
     }
 }

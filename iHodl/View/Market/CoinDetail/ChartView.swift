@@ -63,6 +63,7 @@ struct ChartView: View {
                     }
                 }
             }
+            .chartYAxis(expanded ? .hidden : .visible)
             .chartYScale(domain: (data.min(by: { $0.price < $1.price }))!.price...(data.max(by: { $0.price < $1.price }))!.price) // set bounds of y axis labels
             //MARK: priceFinder
             .chartOverlay(content: { chartProxy in
@@ -161,7 +162,12 @@ struct ChartView: View {
                     
                 }
             }
-            .chartXAxis(.hidden)
+            // hide x axis labels on overlay chart
+            .chartXAxis {
+                AxisMarks {
+                    AxisValueLabel("")
+                }
+            }
             .chartYScale(domain: (data.min(by: { $0.price < $1.price }))!.price...(data.max(by: { $0.price < $1.price }))!.price) // set bounds of y axis labels
         }
         

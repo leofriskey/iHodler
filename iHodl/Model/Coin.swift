@@ -14,7 +14,7 @@ protocol CryptoCurrency {
     var image: String? { get }
 }
 
-// MARK: - Coin
+//MARK: - Coin
 struct Coin: Identifiable, Codable {
     let id, symbol, name: String
     let assetPlatformID: String?
@@ -34,7 +34,7 @@ struct Coin: Identifiable, Codable {
     let lastUpdated: String?
     let tickers: [Ticker]?
     
-    // MARK: - Platforms
+    //MARK: - Platforms
     struct Platforms: Codable {
         let empty: String?
 
@@ -43,12 +43,12 @@ struct Coin: Identifiable, Codable {
         }
     }
     
-    // MARK: - Description
+    //MARK: - Description
     struct Description: Codable {
         let en: String?
     }
     
-    // MARK: - Links
+    //MARK: - Links
     struct Links: Codable {
         let homepage: [String]?
         let blockchainSite, officialForumURL: [String]?
@@ -59,7 +59,7 @@ struct Coin: Identifiable, Codable {
         let subredditURL: String?
         let reposURL: ReposURL?
         
-        // MARK: - ReposURL
+        //MARK: - ReposURL
         struct ReposURL: Codable {
             let github: [String]?
             let bitbucket: [String]?
@@ -79,12 +79,12 @@ struct Coin: Identifiable, Codable {
         }
     }
     
-    // MARK: - ImageSize
+    //MARK: - ImageSize
     struct ImageSize: Codable {
         let thumb, small, large: String?
     }
     
-    // MARK: - MarketData
+    //MARK: - MarketData
     struct MarketData: Codable {
         let currentPrice: [String: Double]
         let ath, athChangePercentage: [String: Double]?
@@ -147,7 +147,7 @@ struct Coin: Identifiable, Codable {
         }
     }
     
-    // MARK: - Ticker
+    //MARK: - Ticker
     struct Ticker: Codable {
         let base: String?
         let target: String?
@@ -161,7 +161,7 @@ struct Coin: Identifiable, Codable {
         let coinID: String?
         let targetCoinID: String?
         
-        // MARK: - Market
+        //MARK: - Market
         struct Market: Codable {
             let name, identifier: String?
             let hasTradingIncentive: Bool?
@@ -214,12 +214,12 @@ struct Coin: Identifiable, Codable {
     }
 }
 
-// MARK: - Sparkline7D
+//MARK: - Sparkline7D
 struct Sparkline7D: Codable {
     let price: [Double]?
 }
 
-// MARK: - CoinPreview
+//MARK: - CoinPreview
 struct CoinPreview: Identifiable, Codable, CryptoCurrency {
     
     static let placeholder = CoinPreview(id: UUID().uuidString , symbol: "placeholder", name: "placeholder", image: nil, currentPrice: 0, marketCapRank: nil, priceChange24H: nil, marketCapChangePercentage24H: nil, lastUpdated: nil, sparkline7D: Sparkline7D(price: Array(repeating: 0.00, count: 24)), priceChangePercentage1HInCurrency: nil, priceChangePercentage1YInCurrency: nil, priceChangePercentage24HInCurrency: nil, priceChangePercentage30DInCurrency: nil, priceChangePercentage7DInCurrency: nil)
@@ -256,7 +256,7 @@ struct CoinPreview: Identifiable, Codable, CryptoCurrency {
         case priceChangePercentage7DInCurrency = "price_change_percentage_7d_in_currency"
     }
 }
-// MARK: Watchlist Coins App Storage
+//MARK: Watchlist Coins App Storage
 typealias WatchlistCoins = [CoinPreview]
 extension WatchlistCoins: RawRepresentable {
     public init?(rawValue: String) {
@@ -278,7 +278,7 @@ extension WatchlistCoins: RawRepresentable {
         }
 }
 
-// MARK: Search Coins
+//MARK: Search Coins
 
 // searched coin without price
 struct CoinNoPrice: Identifiable, Decodable {
@@ -306,11 +306,11 @@ struct SearchedCoin: Identifiable, CryptoCurrency {
 }
 
 
-// MARK: - Global
+//MARK: - Global
 struct GlobalData: Codable {
     let data: DataClass
     
-    // MARK: - DataClass
+    //MARK: - DataClass
     struct DataClass: Codable {
         let activeCryptocurrencies: Int?
         let totalMarketCap, totalVolume, marketCapPercentage: [String: Double]
@@ -326,7 +326,7 @@ struct GlobalData: Codable {
     }
 }
 
-// MARK: CoinChart
+//MARK: CoinChart
 struct CoinChart: Decodable {
     let prices: [[Double]]
 }

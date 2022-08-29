@@ -7,9 +7,10 @@
 
 import SwiftUI
 
-struct CoinPreviewView: View {
+struct CoinPreviewView: View, Themeable {
     
-    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.colorScheme) internal var colorScheme
+    @EnvironmentObject private var market: Market
     
     var coin: CoinPreview
     var interval: String
@@ -22,14 +23,14 @@ struct CoinPreviewView: View {
         
         if coin.symbol != "placeholder" {
             ZStack {
-                // MARK: Coin price & price change
+                //MARK: Coin price & price change
                 
                 
                 ZStack {
-                    // MARK: 1D intrerval
+                    //MARK: 1D intrerval
                     if interval == "1D" {
                         VStack {
-                            // MARK: price go up
+                            //MARK: price go up
                             if coin.priceChangePercentage24HInCurrency ?? 0 > 0 {
                                 HStack {
                                     SparklineView(coin: coin, data: sparkline.map { CGFloat($0) }, lineGradient: [.green.opacity(0.7), .green], bgGradient: [.green.opacity(0.3), .green.opacity(0)])
@@ -42,7 +43,7 @@ struct CoinPreviewView: View {
                                             .padding(.top)
                                     }
                                 }
-                            // MARK: price change is 0
+                            //MARK: price change is 0
                             } else if coin.priceChangePercentage24HInCurrency == 0 {
                                 HStack {
                                     SparklineView(coin: coin, data: sparkline.map { CGFloat($0) }, lineGradient: [.secondary.opacity(0.7), .secondary], bgGradient: [.secondary.opacity(0.3), .secondary.opacity(0)])
@@ -55,7 +56,7 @@ struct CoinPreviewView: View {
                                             .padding(.top)
                                     }
                                 }
-                            // MARK: price go down
+                            //MARK: price go down
                             } else {
                                 HStack {
                                     SparklineView(coin: coin, data: sparkline.map { CGFloat($0) }, lineGradient: [.red.opacity(0.7), .red], bgGradient: [.red.opacity(0.3), .red.opacity(0)])
@@ -70,19 +71,19 @@ struct CoinPreviewView: View {
                                 }
                             }
                             Spacer()
-                            Text("\(coin.currentPrice.formatted(.currency(code: "usd")))")
+                            Text("\(coin.currentPrice.formatAsPrice(currency: market.currency))")
                                 .font(.system(size: 18))
                                 .opacity(darken ? 0.3 : 1)
                         }
                         .onAppear {
                             sparkline = coin.sparkline7D.price?.suffix(25) ?? Array(repeating: 0.00, count: 25)
                         }
-                        // MARK: 7D intrerval
+                        //MARK: 7D intrerval
                     } else { // 7D
                         
                         
                         VStack {
-                            // MARK: price go up
+                            //MARK: price go up
                             if coin.priceChangePercentage7DInCurrency ?? 0 > 0 {
                                 HStack {
                                     SparklineView(coin: coin, data: sparkline.map { CGFloat($0) }, lineGradient: [.green.opacity(0.7), .green], bgGradient: [.green.opacity(0.3), .green.opacity(0)])
@@ -95,7 +96,7 @@ struct CoinPreviewView: View {
                                             .padding(.top)
                                     }
                                 }
-                            // MARK: price change is 0
+                            //MARK: price change is 0
                             } else if coin.priceChangePercentage7DInCurrency == 0 {
                                 HStack {
                                     SparklineView(coin: coin, data: sparkline.map { CGFloat($0) }, lineGradient: [.secondary.opacity(0.7), .secondary], bgGradient: [.secondary.opacity(0.3), .secondary.opacity(0)])
@@ -108,7 +109,7 @@ struct CoinPreviewView: View {
                                             .padding(.top)
                                     }
                                 }
-                            // MARK: price go down
+                            //MARK: price go down
                             } else {
                                 HStack {
                                     SparklineView(coin: coin, data: sparkline.map { CGFloat($0) }, lineGradient: [.red.opacity(0.7), .red], bgGradient: [.red.opacity(0.3), .red.opacity(0)])
@@ -124,7 +125,7 @@ struct CoinPreviewView: View {
                                 }
                             }
                             Spacer()
-                            Text("\(coin.currentPrice.formatted(.currency(code: "usd")))")
+                            Text("\(coin.currentPrice.formatAsPrice(currency: market.currency))")
                                 .font(.system(size: 18))
                                 .opacity(darken ? 0.3 : 1)
                         }
@@ -136,9 +137,7 @@ struct CoinPreviewView: View {
                 .padding(.bottom, UIScreen.screenHeight * 0.025)
                 .padding([.horizontal, .top], 10)
                 .frame(width: UIScreen.screenWidth * 0.9, height: UIScreen.screenHeight * 0.18)
-                .background(
-                    colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light
-                )
+                .background(Material02)
                 .cornerRadius(20)
                 .onChange(of: coin.currentPrice) { _ in
                     // make data blink on update
@@ -149,7 +148,7 @@ struct CoinPreviewView: View {
                         }
                     }
                 }
-                // MARK: Coin logo, symbol, name, rank
+                //MARK: Coin logo, symbol, name, rank
                 HStack {
                     if coin.marketCapRank != nil {
                         Text("\(coin.marketCapRank!)")
@@ -183,7 +182,7 @@ struct CoinPreviewView: View {
                 .offset(x: -UIScreen.screenWidth * 0.08, y: UIScreen.screenHeight * 0.087)
             }
             .frame(width: UIScreen.screenWidth * 0.9, height: UIScreen.screenHeight * 0.18)
-    // MARK: Placeholder
+    //MARK: Placeholder
         } else {
             ZStack {
                 
@@ -193,23 +192,21 @@ struct CoinPreviewView: View {
                 .padding(.bottom, UIScreen.screenHeight * 0.025)
                 .padding([.horizontal, .top], 10)
                 .frame(width: UIScreen.screenWidth * 0.9, height: UIScreen.screenHeight * 0.18)
-                .background(
-                    colorScheme == .dark ? LinearGradient.material02dark : LinearGradient.material02light
-                )
+                .background(Material02)
                 .cornerRadius(20)
                 
                 HStack {
                     Text("1")
                         .font(.caption)
                         .opacity(0)
-                    (colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
+                    Material05
                         .clipShape(Circle())
                         .frame(width: 32, height: 32)
                     VStack(alignment: .leading) {
-                        (colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
+                        Material05
                             .frame(width: 100, height: 16)
                             .clipShape(RoundedRectangle(cornerRadius: 16))
-                        (colorScheme == .dark ? LinearGradient.material05dark : LinearGradient.material05light)
+                        Material05
                             .frame(width: 40, height: 12)
                             .clipShape(RoundedRectangle(cornerRadius: 16))
                     }

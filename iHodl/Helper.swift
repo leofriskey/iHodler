@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// MARK: Get screen size data
+//MARK: Get screen size data
 extension UIScreen {
    static let screenWidth = UIScreen.main.bounds.size.width
    static let screenHeight = UIScreen.main.bounds.size.height
@@ -15,7 +15,7 @@ extension UIScreen {
 }
 
 extension View {
-    // MARK: Show an error alert
+    //MARK: Show an error alert
     func errorAlert(error: Binding<Market.Error?>, remainingTime: Binding<Int>) -> some View {
         let localizedAlertError = LocalizedAlertError(error: error.wrappedValue)
         
@@ -83,6 +83,7 @@ extension Double {
     }
 }
 
+//MARK: Create readable date for PriceViewerInfo
 func createDateTime(timestamp: Date, interval: String) -> String {
     let dateFormatter = DateFormatter()
     let timezone = TimeZone.current.abbreviation() ?? "CET"  // get current TimeZone abbreviation or set to CET
@@ -110,8 +111,28 @@ func createDateTime(timestamp: Date, interval: String) -> String {
     return strDate
 }
 
+//MARK: Capitilize first letter
 extension String {
     func capitalizingFirstLetter() -> String {
         return prefix(1).capitalized + dropFirst()
+    }
+}
+
+//MARK: Format as price
+extension Double {
+    func formatAsPrice(currency: String, afterZero: Int = 2) -> String {
+        let priceFormatter = NumberFormatter()
+        priceFormatter.numberStyle = .currency
+        priceFormatter.currencySymbol = ""
+        priceFormatter.maximumFractionDigits = afterZero
+        
+        
+        
+        let price = priceFormatter.string(from: NSNumber(value: self)) ?? String(self)
+        let symbol = currency == "usd" ? "$" : "₽"
+        
+        let result = currency == "usd" ? "\(symbol)\(price)" : "\(price)\(symbol)"
+        
+        return result
     }
 }

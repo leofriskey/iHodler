@@ -7,12 +7,13 @@
 
 import SwiftUI
 
-struct MarketView: View {
+struct MarketView: View, Themeable {
     
     @EnvironmentObject private var market: Market
+    @EnvironmentObject private var settings: Settings
     @EnvironmentObject private var network: Network
     
-    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.colorScheme) internal var colorScheme
     
     @State private var animateNetworkWarnBorder = false
     
@@ -20,68 +21,36 @@ struct MarketView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // background color
-                (colorScheme == .dark ? LinearGradient.darkBG
-                    .ignoresSafeArea() : LinearGradient.lightBG.ignoresSafeArea())
-                // MARK: Main content
+                //MARK: Background
+                BackgroundColor.ignoresSafeArea()
+                
+                
+                //MARK: Main content
                 MarketContentView()
                     .searchable(text: $market.searchText, placement: .navigationBarDrawer(displayMode: .always))
                     .disabled(network.connected == false ? true : false)
                     .blur(radius: network.connected == false ? 7 : 0)
                     .onSubmit(of: .search) {
-                        // check if search text length is >= 3
-                        if market.searchText.count >= 3 {
-                            market.searchLengthIsEnough = true
-                            market.searchNotFound = false
-                            Task {
-                                // fetch searched coins
-                                await market.searchForCoins(market.searchText)
-                            }
-                        } else {
-                            market.searchLengthIsEnough = false
+                        Task {
+                            await market.validateSearch()
                         }
                     }
-                    .onReceive(market.errorTimer) { time in
-                        guard market.error != nil else { return }
-                        
-                        if market.errorTime > 0 {
-                            market.errorTime -= 1
-                        }
+                    .onReceive(market.errorTimer) { _ in
+                        market.reduceErrorTime()
                     }
+                // no internet connectivity
                 if network.connected == false {
                     ZStack {
-                        colorScheme == .dark ?
-                        Color.black
-                            .opacity(0.2)
-                            .ignoresSafeArea()
-                        :
-                        Color.white
-                            .opacity(0.2)
-                            .ignoresSafeArea()
+                        // dim the lights
+                        Material02.ignoresSafeArea()
                         VStack {
                             Spacer()
+                            // show warning
                             Label("Check your internet connection", systemImage: "wifi.exclamationmark")
                                 .frame(width: 300, height: 30)
                                 .background(
 
-                                    colorScheme == .dark ?
-                                    LinearGradient.material02dark
-                                        .clipShape(
-                                            RoundedRectangle(cornerRadius: 16)
-                                        )
-                                        .shadow(radius: 2, x: -4, y: 4)
-                                        .shadow(radius: 2, x: 4, y: -4)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 16)
-                                                .stroke(animateNetworkWarnBorder ? .red : .clear)
-                                                .onAppear {
-                                                    withAnimation(.easeInOut(duration: 1).repeatForever(autoreverses: true)) {
-                                                        self.animateNetworkWarnBorder.toggle()
-                                                    }
-                                                }
-                                        )
-                                    :
-                                    LinearGradient.material02light
+                                    Material02
                                         .clipShape(
                                             RoundedRectangle(cornerRadius: 16)
                                         )
@@ -103,14 +72,15 @@ struct MarketView: View {
                     }
                 }
             }
-            .navigationTitle(market.title)
+            .navigationTitle(settings.marketTitle)
             .toolbar {
-                // MARK: Toolbar control
+                //MARK: Toolbar control
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     
-                    // MARK: time interval
-                    Picker("Choose time interval: 1D or 7D", selection: $market.timeInterval) {
-                        ForEach(market.timeIntervals, id: \.self) { interval in
+                    
+                    //MARK: time interval
+                    Picker("Choose time interval: 1 day or 7 days", selection: $market.marketInterval) {
+                        ForEach(market.marketIntervals, id: \.self) { interval in
                             Text(interval)
                         }
                     }
@@ -119,11 +89,10 @@ struct MarketView: View {
                 }
             }
         }
-        .errorAlert(error: $market.error, remainingTime: $market.errorTime)
+        .errorAlert(error: $market.error, remainingTime: $market.errorTime) // show alert when api limit hit
         .onReceive(market.marketTimer) { time in
-            guard market.marketTimerIsActive else {
-                return
-            }
+            guard market.marketTimerIsActive else { return }
+            
             Task {
                 do {
                     // fetch data every 30 seconds
@@ -144,6 +113,6 @@ struct MarketView: View {
 
 struct MarketView_Previews: PreviewProvider {
     static var previews: some View {
-        MarketView().environment(\.colorScheme, .dark).environmentObject(Market())
+        MarketView().environment(\.colorScheme, .dark).environmentObject(Market()).environmentObject(Network())
     }
 }

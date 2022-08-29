@@ -11,12 +11,12 @@ enum AboutLink {
     case website, whitepaper, sourcecode
 }
 
-struct LinkView: View {
+struct LinkView: View, Themeable {
     
     let type: AboutLink
     let url: String
     
-    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.colorScheme) internal var colorScheme
     
     var body: some View {
         switch type {
@@ -43,11 +43,7 @@ struct LinkView: View {
             .padding(7)
             .frame(height: 22)
             .background(
-                colorScheme == .dark ?
-                LinearGradient.material02dark
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                :
-                LinearGradient.material02light
+                Material02
                     .clipShape(RoundedRectangle(cornerRadius: 4))
             )
         case .whitepaper:
@@ -68,11 +64,7 @@ struct LinkView: View {
             .padding(7)
             .frame(height: 22)
             .background(
-                colorScheme == .dark ?
-                LinearGradient.material02dark
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                :
-                LinearGradient.material02light
+                Material02
                     .clipShape(RoundedRectangle(cornerRadius: 4))
             )
         case .sourcecode:
@@ -93,11 +85,7 @@ struct LinkView: View {
             .padding(7)
             .frame(height: 22)
             .background(
-                colorScheme == .dark ?
-                LinearGradient.material02dark
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                :
-                LinearGradient.material02light
+                Material02
                     .clipShape(RoundedRectangle(cornerRadius: 4))
             )
         }

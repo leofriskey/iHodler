@@ -6,10 +6,11 @@
 //
 
 import SwiftUI
+import Combine
 
 @MainActor class Market: ObservableObject {
     
-    // MARK: Timers
+    //MARK: Timers
     // Market View timer
     let marketTimer = Timer.publish(every: 30, tolerance: 0.5, on: .main, in: .common).autoconnect()
     @Published var marketTimerIsActive = true
@@ -17,35 +18,61 @@ import SwiftUI
     let coinDetailTimer = Timer.publish(every: 30, tolerance: 0.5, on: .main, in: .common).autoconnect()
     @Published var coinDetailTimerIsActive = false
     
-    // MARK: Lang
-    let title = "Market"
-    let top10Title = "Top 10"
-    let watchlistTitle = "Watchlist"
-    let watchlistAbout = "Add coins to watchlist by holding on them"
-    let noData = "no data"
+    //MARK: Currency
+    @Published private(set) var currency = "usd"
     
-    // MARK: Global chart
+    // subscribe to currency changes from settings
+    @AppStorage("settingsCurrency") private var settingsCurrency = "usd"
+    var cancellable : AnyCancellable?
+    func connect(_ publisher: AnyPublisher<String,Never>) {
+            cancellable = publisher.sink(receiveValue: { currency in
+                print(currency)
+                self.settingsCurrency = currency
+            })
+        }
+    
+    //MARK: Global chart
     @Published private(set) var globalData: GlobalData? = nil
     @Published var gcPicker = "Overview"
     let gcValues = ["Overview"]
     
-    // MARK: Watchlist
+    
+    //MARK: Watchlist
     @AppStorage("watchlist") private(set) var watchlist = WatchlistCoins()
     
-    // MARK: Top 10 Coins
+    
+    //MARK: Top 10 Coins
     @Published private(set) var top10Coins = [CoinPreview]()
     
-    // MARK: Search
+    //MARK: Search
     @Published var searchText = ""
     @Published var searchLengthIsEnough = false
     @Published var searchedCoins = [SearchedCoin]()
     @Published var searchNotFound = false
     
-    // MARK: Time Interval
-    @AppStorage("time_interval") var timeInterval = "1D"
-    let timeIntervals = ["1D", "7D"]
+    func validateSearch() async {
+        // check if search text length is >= 3
+        if searchText.count >= 3 {
+            searchLengthIsEnough = true
+            searchNotFound = false
+            
+            // fetch searched coins
+            await searchForCoins(searchText)
+            
+        } else {
+            searchLengthIsEnough = false
+        }
+    }
+    func deleteCachedSearch() {
+        searchLengthIsEnough = false
+        searchedCoins = []
+    }
     
-    // MARK: API Errors
+    //MARK: Time Interval
+    @AppStorage("time_interval") var marketInterval = "1D"
+    let marketIntervals = ["1D", "7D"]
+    
+    //MARK: API Errors
     enum Error: LocalizedError {
         case limitHit, failedAddingToWatchlist
         
@@ -72,18 +99,28 @@ import SwiftUI
     let errorTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     private let sleeptime: UInt64 = 120_000_000_000
     
-    // MARK: DetailView
+    func reduceErrorTime() {
+        guard error != nil else { return }
+        
+        if errorTime > 0 {
+            errorTime -= 1
+        }
+    }
+    
+    //MARK: DetailView
     @AppStorage("chartTimePicker") var chartTimePicker = "1D"
     let chartTimeIntervals = ["1D","7D","30D","1Y","All"]
     @Published var oldMarketData: Coin.MarketData? = nil
     
-    // MARK: Chart
+    //MARK: Chart
     @Published var chartLoaded = true
     @Published var currentActiveItem: CoinChartData? = nil
     
     
-    // MARK: Fetch Coin
+    //MARK: Fetch Coin
     func fetchCoin(id: String, forPreview: Bool = false) async throws -> Coin? {
+        // get user's chosen currency from settings
+        let currency = settingsCurrency
         
         if self.error != nil {
             try await Task.sleep(nanoseconds: self.sleeptime)
@@ -105,11 +142,19 @@ import SwiftUI
             
             let decodedResponse = try JSONDecoder().decode(Coin.self, from: data)
             
+            self.currency = currency
+            
             print("Fetched coin \(decodedResponse.name)")
+            
+            
+            
             return decodedResponse
 
         // full info (e.g. detail view)
         } else {
+            // get user's chosen currency from settings
+            let currency = settingsCurrency
+            
             guard let url = URL(string: "https://api.coingecko.com/api/v3/coins/\(id)?localization=false&tickers=true&market_data=true&community_data=true&developer_data=true&sparkline=true") else { return nil }
             
             let configuration = URLSessionConfiguration.ephemeral
@@ -129,6 +174,9 @@ import SwiftUI
             }
             
             print("Fetched coin \(decodedResponse.name)")
+            
+            self.currency = currency
+            
             return decodedResponse
         }
     }
@@ -137,14 +185,17 @@ import SwiftUI
         top10Coins = Array(repeating: CoinPreview.placeholder, count: 10)
     }
     
-    // MARK: fetch Top 10
+    //MARK: fetch Top 10
     func fetchTop10Coins() async throws {
+        
+        // get user's chosen currency from settings
+        let currency = settingsCurrency
         
         if self.error != nil {
             try await Task.sleep(nanoseconds: self.sleeptime)
         }
         
-        guard let url = URL(string: "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d%2C30d%2C1y") else { return }
+        guard let url = URL(string: "https://api.coingecko.com/api/v3/coins/markets?vs_currency=\(currency)&order=market_cap_desc&per_page=10&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d%2C30d%2C1y") else { return }
         
         let configuration = URLSessionConfiguration.ephemeral
         let session = URLSession(configuration: configuration)
@@ -156,15 +207,18 @@ import SwiftUI
             throw Error.limitHit
         }
         
-        if let decodedResponse = try? JSONDecoder().decode([CoinPreview].self, from: data) {
-            top10Coins = decodedResponse
-        }
+        let decodedResponse = try JSONDecoder().decode([CoinPreview].self, from: data)
+        
+        self.currency = currency
+        top10Coins = decodedResponse
+        
         print("Fetched top 10 Coins")
+        
         syncTop10andWatchlist()
     }
     
-    // MARK: sync Top 10 & Watchlist
-    func syncTop10andWatchlist() { // i think this logic is flawed
+    //MARK: sync Top 10 & Watchlist
+    func syncTop10andWatchlist() {
         for i in top10Coins {
             if let index = watchlist.firstIndex(where: { $0.id == i.id }) {
                 withAnimation {
@@ -174,7 +228,7 @@ import SwiftUI
         }
     }
     
-    // MARK: fetch Watchlist
+    //MARK: fetch Watchlist
     func fetchWatchlist() async throws {
         
         if self.error != nil {
@@ -204,7 +258,7 @@ import SwiftUI
         }
     }
     
-    // MARK: add to watchlist
+    //MARK: add to watchlist
     
     // add to watchlist
     func addToWatchlist(_ coin: CoinPreview) {
@@ -257,7 +311,7 @@ import SwiftUI
         }
     }
     
-    // MARK: remove from watchlist
+    //MARK: remove from watchlist
     func removeFromWatchlist<T: Identifiable>(_ coin: T) {
         if watchlist.contains(where: { $0.id == coin.id as! String } ) {
             watchlist.removeAll { $0.id == coin.id as! String }
@@ -266,8 +320,12 @@ import SwiftUI
         }
     }
     
-    // MARK: transform Coin to Coin_Preview
-    func coinToCoinPreview(_ coin: Coin, currency: String = "usd") -> CoinPreview {
+    //MARK: transform Coin to Coin_Preview
+    func coinToCoinPreview(_ coin: Coin) -> CoinPreview {
+        
+        // get user's chosen currency from settings
+        let currency = settingsCurrency
+        
         return CoinPreview(
             id: coin.id,
             symbol: coin.symbol,
@@ -286,8 +344,11 @@ import SwiftUI
             priceChangePercentage7DInCurrency: coin.marketData.priceChangePercentage7DInCurrency?["\(currency)"])
     }
     
-    // MARK: Search for coins
-    @MainActor func searchForCoins(_ word: String, currency: String = "usd") async {
+    //MARK: Search for coins
+    @MainActor func searchForCoins(_ word: String) async {
+        
+        // get user's chosen currency from settings
+        let currency = settingsCurrency
         
         if self.error != nil {
             do {
@@ -377,13 +438,14 @@ import SwiftUI
             }
         }
         
-    // add filtered coins to output property for feeding views
+    // add filtered coins to output property for feeding views (+ update currency)
+        self.currency = currency
         withAnimation {
             self.searchedCoins = searchedCoinsWithPrice.filter { $0.id.range(of: query, options: .caseInsensitive) != nil || $0.name.range(of: query, options: .caseInsensitive) != nil || $0.symbol.range(of: query, options: .caseInsensitive) != nil }
         }
     }
     
-    // MARK: Fetch Global data
+    //MARK: Fetch Global data
     func fetchGlobal() async throws {
         
         if self.error != nil {
@@ -420,7 +482,10 @@ import SwiftUI
         return percentage
     }
     
-    func fetchCoinChart(coinID: String, interval: String, isRefresh: Bool = false, currency: String = "usd") async throws -> [CoinChartData] {
+    func fetchCoinChart(coinID: String, interval: String, isRefresh: Bool = false) async throws -> [CoinChartData] {
+        
+        // get user's chosen currency from settings
+        let currency = settingsCurrency
         
         if self.error != nil {
             try await Task.sleep(nanoseconds: self.sleeptime)
@@ -471,13 +536,14 @@ import SwiftUI
             tempArray = tempArray.enumerated().compactMap { index, element in index % 7 == 0 ? element : nil }
         }
         
+        self.currency = currency
         chartLoaded = true
         print("Fetched chart for \(coinID)")
         return tempArray
     }
     
     
-    // MARK: Init
+    //MARK: Init
     init() {
         // set placeholder for top10 before coins are fetched from the api
         setPlaceholderTop10()

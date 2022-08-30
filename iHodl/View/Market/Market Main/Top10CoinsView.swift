@@ -42,7 +42,7 @@ struct Top10CoinsView: View, Themeable {
                         CoinDetailView(anyCoin: coin)
                     } label: {
                         CoinPreviewView(coin: coin, interval: market.marketInterval)
-                        .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.23)
+                        .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.2)
                         //MARK: Top10 context menu
                         .contextMenu {
                             // "add coin to watchlist" option if coin is not already there

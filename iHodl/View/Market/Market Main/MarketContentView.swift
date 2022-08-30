@@ -47,7 +47,7 @@ struct MarketContentView: View, Themeable {
                         
                         // Spacer
                         Color.clear
-                            .frame(height: UIScreen.screenHeight * 0.08)
+                            .frame(height: UIScreen.screenHeight * 0.05)
                         
                         //MARK: Top 10
                         HStack {

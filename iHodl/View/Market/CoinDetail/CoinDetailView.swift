@@ -12,7 +12,6 @@ struct CoinDetailView: View, Themeable {
     //MARK: environments
     @Environment(\.colorScheme) internal var colorScheme
     @EnvironmentObject private var market: Market
-    
     @EnvironmentObject private var settings: Settings
     
     //MARK: init
@@ -336,6 +335,7 @@ struct CoinDetailView: View, Themeable {
                     .onChange(of: market.chartTimePicker) { _ in
                         //MARK: animate time interval change
                         market.chartLoaded = false
+                        self.expandedChart = false
                         self.blinkChange = true
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             withAnimation(.easeInOut(duration: 0.5)) {

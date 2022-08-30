@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-@MainActor class Market: ObservableObject {
+@MainActor final class Market: ObservableObject {
     
     //MARK: Timers
     // Market View timer
@@ -23,10 +23,9 @@ import Combine
     
     // subscribe to currency changes from settings
     @AppStorage("settingsCurrency") private var settingsCurrency = "usd"
-    var cancellable : AnyCancellable?
+    private(set) var cancellable: AnyCancellable?
     func connect(_ publisher: AnyPublisher<String,Never>) {
             cancellable = publisher.sink(receiveValue: { currency in
-                print(currency)
                 self.settingsCurrency = currency
             })
         }
@@ -46,9 +45,9 @@ import Combine
     
     //MARK: Search
     @Published var searchText = ""
-    @Published var searchLengthIsEnough = false
-    @Published var searchedCoins = [SearchedCoin]()
-    @Published var searchNotFound = false
+    @Published private(set) var searchLengthIsEnough = false
+    @Published private(set) var searchedCoins = [SearchedCoin]()
+    @Published private(set) var searchNotFound = false
     
     func validateSearch() async {
         // check if search text length is >= 3
@@ -69,7 +68,7 @@ import Combine
     }
     
     //MARK: Time Interval
-    @AppStorage("time_interval") var marketInterval = "1D"
+    @AppStorage("time_interval") var marketInterval = "7D"
     let marketIntervals = ["1D", "7D"]
     
     //MARK: API Errors
@@ -108,7 +107,7 @@ import Combine
     }
     
     //MARK: DetailView
-    @AppStorage("chartTimePicker") var chartTimePicker = "1D"
+    @AppStorage("chartTimePicker") var chartTimePicker = "7D"
     let chartTimeIntervals = ["1D","7D","30D","1Y","All"]
     @Published var oldMarketData: Coin.MarketData? = nil
     
@@ -144,10 +143,6 @@ import Combine
             
             self.currency = currency
             
-            print("Fetched coin \(decodedResponse.name)")
-            
-            
-            
             return decodedResponse
 
         // full info (e.g. detail view)
@@ -173,16 +168,17 @@ import Combine
                 self.oldMarketData = decodedResponse.marketData
             }
             
-            print("Fetched coin \(decodedResponse.name)")
-            
             self.currency = currency
             
             return decodedResponse
         }
     }
     
+    //MARK: set placeholder top 10
     func setPlaceholderTop10() {
-        top10Coins = Array(repeating: CoinPreview.placeholder, count: 10)
+        for _ in 0...10 {
+            top10Coins.append(CoinPreview(id: UUID().uuidString , symbol: "placeholder", name: "placeholder", image: nil, currentPrice: 0, marketCapRank: nil, priceChange24H: nil, marketCapChangePercentage24H: nil, lastUpdated: nil, sparkline7D: Sparkline7D(price: Array(repeating: 0.00, count: 24)), priceChangePercentage1HInCurrency: nil, priceChangePercentage1YInCurrency: nil, priceChangePercentage24HInCurrency: nil, priceChangePercentage30DInCurrency: nil, priceChangePercentage7DInCurrency: nil))
+        }
     }
     
     //MARK: fetch Top 10
@@ -211,8 +207,6 @@ import Combine
         
         self.currency = currency
         top10Coins = decodedResponse
-        
-        print("Fetched top 10 Coins")
         
         syncTop10andWatchlist()
     }
@@ -259,8 +253,6 @@ import Combine
     }
     
     //MARK: add to watchlist
-    
-    // add to watchlist
     func addToWatchlist(_ coin: CoinPreview) {
         if watchlist.contains(where: { $0.id == coin.id } ) {
             return
@@ -269,7 +261,7 @@ import Combine
         }
     }
     
-    // add placeholder to watchlist while coin is fetching
+    //MARK: add placeholder to watchlist while coin is fetching
     func addToWatchlistFromSearchPlaceHolder() {
         let coin = CoinPreview.placeholder
         
@@ -280,7 +272,7 @@ import Combine
         }
     }
     
-    // fetch coin, transform it for preview and replace placeholder with it
+    //MARK: fetch coin, transform it for preview and replace placeholder with it
     func addToWatchListFromSearch(id: String) async throws {
         
         if self.error != nil {
@@ -470,10 +462,9 @@ import Combine
         withAnimation {
             self.globalData = decodedResponse
         }
-        
-        print("Fetched global data")
     }
     
+    //MARK: get scale effect
     func getScaleEffect(index: Int) -> Double {
         let symbol = top10Coins[index].symbol
         let rawPercentage = globalData?.data.marketCapPercentage[symbol]
@@ -482,6 +473,7 @@ import Combine
         return percentage
     }
     
+    //MARK: Fetch Coin Chart
     func fetchCoinChart(coinID: String, interval: String, isRefresh: Bool = false) async throws -> [CoinChartData] {
         
         // get user's chosen currency from settings
@@ -532,13 +524,16 @@ import Combine
             tempArray.append(CoinChartData(date: Date(timeIntervalSince1970: (datePrice[0] / 1000.0)), price: datePrice[1]))
         }
         
+        if interval == "1D" {
+            tempArray = tempArray.enumerated().compactMap { index, element in index % 12 == 0 ? element : nil }
+        }
+        
         if interval == "All" {
             tempArray = tempArray.enumerated().compactMap { index, element in index % 7 == 0 ? element : nil }
         }
         
         self.currency = currency
         chartLoaded = true
-        print("Fetched chart for \(coinID)")
         return tempArray
     }
     

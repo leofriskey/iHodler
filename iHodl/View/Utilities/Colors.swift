@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+//MARK: Colors
 extension LinearGradient {
     static let darkBG = LinearGradient(colors: [Color(red: 46/255, green: 53/255, blue: 80/255), Color(red: 25/255, green: 24/255, blue: 42/255)], startPoint: .top, endPoint: .bottom)
     
@@ -22,11 +23,13 @@ extension LinearGradient {
     static let Material05light = LinearGradient(colors: [Color(red: 118/255, green: 118/255, blue: 128/255, opacity: 0.3), Color(red: 108/255, green: 108/255, blue: 108/255, opacity: 0.2)], startPoint: .topLeading, endPoint: .bottomTrailing)
 }
 
+//MARK: Themeable
 protocol Themeable {
     var colorScheme: ColorScheme { get }
 }
 
 extension Themeable {
+    
     var BackgroundColor: LinearGradient {
         colorScheme == .dark ? LinearGradient.darkBG : LinearGradient.lightBG
     }

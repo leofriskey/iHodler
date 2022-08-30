@@ -19,7 +19,6 @@
 		E38824F7288F199A0002E9CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E38824F6288F199A0002E9CB /* Assets.xcassets */; };
 		E38824FA288F199A0002E9CB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E38824F9288F199A0002E9CB /* Preview Assets.xcassets */; };
 		E3882503288F1B8C0002E9CB /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3882502288F1B8C0002E9CB /* MainView.swift */; };
-		E38BDC5B28AE83A000841F9F /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38BDC5A28AE83A000841F9F /* Network.swift */; };
 		E38D2BBA28BA5433009E8BF4 /* LinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38D2BB928BA5433009E8BF4 /* LinkView.swift */; };
 		E38D2BBE28BAB7D2009E8BF4 /* OptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38D2BBD28BAB7D2009E8BF4 /* OptionView.swift */; };
 		E38D2BC128BAC3BC009E8BF4 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38D2BC028BAC3BC009E8BF4 /* SearchView.swift */; };
@@ -48,7 +47,6 @@
 		E38824F6288F199A0002E9CB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E38824F9288F199A0002E9CB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E3882502288F1B8C0002E9CB /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
-		E38BDC5A28AE83A000841F9F /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		E38D2BB928BA5433009E8BF4 /* LinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkView.swift; sourceTree = "<group>"; };
 		E38D2BBD28BAB7D2009E8BF4 /* OptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionView.swift; sourceTree = "<group>"; };
 		E38D2BC028BAC3BC009E8BF4 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
@@ -85,12 +83,20 @@
 			path = CoinDetail;
 			sourceTree = "<group>";
 		};
-		E36AD0D928BCD47A007EF252 /* Helpers */ = {
+		E3499D8C28BD58F90010A760 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E38824F6288F199A0002E9CB /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		E36AD0D928BCD47A007EF252 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
 				E39A198528A4134000E363DF /* Helper.swift */,
 			);
-			path = Helpers;
+			path = Managers;
 			sourceTree = "<group>";
 		};
 		E38824E6288F19990002E9CB = {
@@ -113,10 +119,10 @@
 			isa = PBXGroup;
 			children = (
 				E38824F2288F19990002E9CB /* iHodlApp.swift */,
-				E36AD0D928BCD47A007EF252 /* Helpers */,
+				E36AD0D928BCD47A007EF252 /* Managers */,
 				E3882504288F1BA70002E9CB /* Model */,
 				E3882505288F1BB40002E9CB /* View */,
-				E38824F6288F199A0002E9CB /* Assets.xcassets */,
+				E3499D8C28BD58F90010A760 /* Resources */,
 				E38824F8288F199A0002E9CB /* Preview Content */,
 			);
 			path = iHodl;
@@ -135,7 +141,6 @@
 			children = (
 				E3860E9D28B2B4D500F15B63 /* Settings.swift */,
 				E32D9DE2289C1B5700429A94 /* Coin.swift */,
-				E38BDC5A28AE83A000841F9F /* Network.swift */,
 				E39A198B28A45FA600E363DF /* Market.swift */,
 			);
 			path = Model;
@@ -157,11 +162,11 @@
 			children = (
 				E39A198128A3F1E600E363DF /* MarketView.swift */,
 				E34A61B728A9B38F0054E42C /* MarketContentView.swift */,
-				E38D2BC028BAC3BC009E8BF4 /* SearchView.swift */,
 				E38D2BC228BAC9B7009E8BF4 /* Top10CoinsView.swift */,
 				E38D2BC428BACAC0009E8BF4 /* WatchlistCoinsView.swift */,
 				E39A198728A453F600E363DF /* CoinPreviewView.swift */,
 				E3294A0A28A5AE9F00CC4BDC /* SparklineView.swift */,
+				E38D2BC028BAC3BC009E8BF4 /* SearchView.swift */,
 				E36D9D5828B2DEE30040A24D /* SearchedCoinView.swift */,
 				E37BBE5328B0358300405083 /* GlobalView.swift */,
 			);
@@ -284,7 +289,6 @@
 				E39A198628A4134000E363DF /* Helper.swift in Sources */,
 				E38D2BBE28BAB7D2009E8BF4 /* OptionView.swift in Sources */,
 				E36D9D5928B2DEE30040A24D /* SearchedCoinView.swift in Sources */,
-				E38BDC5B28AE83A000841F9F /* Network.swift in Sources */,
 				E38D2BBA28BA5433009E8BF4 /* LinkView.swift in Sources */,
 				E39A198C28A45FA600E363DF /* Market.swift in Sources */,
 			);

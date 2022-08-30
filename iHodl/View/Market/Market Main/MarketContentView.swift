@@ -96,6 +96,6 @@ struct MarketContentView: View, Themeable {
 
 struct MarketContentView_Previews: PreviewProvider {
     static var previews: some View {
-        MarketView().environmentObject(Market()).environment(\.colorScheme, .dark).environmentObject(Network())
+        MarketView().environmentObject(Market()).environment(\.colorScheme, .dark)
     }
 }

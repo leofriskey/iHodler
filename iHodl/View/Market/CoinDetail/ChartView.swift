@@ -67,84 +67,69 @@ struct ChartView: View {
             .chartYScale(domain: (data.min(by: { $0.price < $1.price }))!.price...(data.max(by: { $0.price < $1.price }))!.price) // set bounds of y axis labels
             //MARK: priceFinder
             .chartOverlay(content: { chartProxy in
-                GeometryReader { geoProxy in
-                    Rectangle()
-                        .fill(Color.clear)
-                        .contentShape(Rectangle())
-                        .gesture(
-                            DragGesture()
-                                .onChanged { newValue in
-                                    guard showDetailPrice else { return }
-                                    
-                                    let location = newValue.location
-                                    
-                                    if let date: Date = chartProxy.value(atX: location.x) {
-                                        
-                                        let calendar = Calendar.current
-                                        
-                                        if interval == "1D" {
-                                            if let currentItem = data.first(where: { item in
-                                                calendar.isDate(date, equalTo: item.date, toGranularity: .minute)
-                                            }) {
-                                                market.currentActiveItem = currentItem
-                                                print(currentItem.date)
-                                            }
+                Rectangle()
+                    .fill(Color.clear)
+                    .contentShape(Rectangle())
+                    .gesture(
+                        DragGesture()
+                            .onChanged { newValue in
+                                guard showDetailPrice else { return }
+
+                                let location = newValue.location
+
+                                if let date: Date = chartProxy.value(atX: location.x) {
+
+                                    let calendar = Calendar.current
+
+                                    if interval == "1D" {
+                                        if let currentItem = data.first(where: { item in
+                                            calendar.isDate(date, equalTo: item.date, toGranularity: .hour)
+                                        }) {
+                                            market.currentActiveItem = currentItem
                                         }
-                                        if interval == "7D" {
-                                            if let currentItem = data.first(where: { item in
-                                                calendar.isDate(date, equalTo: item.date, toGranularity: .hour)
-                                            }) {
-                                                market.currentActiveItem = currentItem
-                                                print(currentItem.date)
-                                            }
+                                    }
+                                    if interval == "7D" {
+                                        if let currentItem = data.first(where: { item in
+                                            calendar.isDate(date, equalTo: item.date, toGranularity: .hour)
+                                        }) {
+                                            market.currentActiveItem = currentItem
                                         }
-                                        if interval == "30D" {
-                                            if let currentItem = data.first(where: { item in
-                                                calendar.isDate(date, equalTo: item.date, toGranularity: .hour)
-                                            }) {
-                                                market.currentActiveItem = currentItem
-                                                print(currentItem.date)
-                                            }
+                                    }
+                                    if interval == "30D" {
+                                        if let currentItem = data.first(where: { item in
+                                            calendar.isDate(date, equalTo: item.date, toGranularity: .hour)
+                                        }) {
+                                            market.currentActiveItem = currentItem
                                         }
-                                        if interval == "1Y" {
-                                            if let currentItem = data.first(where: { item in
-                                                calendar.isDate(date, equalTo: item.date, toGranularity: .day)
-                                            }) {
-                                                market.currentActiveItem = currentItem
-                                                print(currentItem.date)
-                                            }
+                                    }
+                                    if interval == "1Y" {
+                                        if let currentItem = data.first(where: { item in
+                                            calendar.isDate(date, equalTo: item.date, toGranularity: .day)
+                                        }) {
+                                            market.currentActiveItem = currentItem
                                         }
-                                        if interval == "All" {
-                                            if let currentItem = data.first(where: { item in
-                                                calendar.isDate(date, equalTo: item.date, toGranularity: .day)
-                                            }) {
-                                                market.currentActiveItem = currentItem
-                                                print(currentItem.date)
-                                            }
+                                    }
+                                    if interval == "All" {
+                                        if let currentItem = data.first(where: { item in
+                                            calendar.isDate(date, equalTo: item.date, toGranularity: .weekOfMonth)
+                                        }) {
+                                            market.currentActiveItem = currentItem
                                         }
                                     }
                                 }
-                                .onEnded { _ in
-                                    market.currentActiveItem = nil
-                                }
-                        )
-                }
+                            }
+                            .onEnded { _ in
+                                market.currentActiveItem = nil
+                            }
+                    )
             })
-            .onAppear {
-                //MARK: animate chart on appear
-                animate = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    withAnimation(.easeOut(duration: 0.5)) {
-                        animate = false
-                    }
-                }
-            }
+            .drawingGroup()
             .onChange(of: coin.marketData.currentPrice) { newPrice in
                 //MARK: animate chart refresh
                 if market.oldMarketData?.currentPrice != newPrice {
                     animate = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        withAnimation(.easeInOut(duration: 0.5)) {
+                        withAnimation(.easeInOut(duration: 0.3)) {
                             animate = false
                         }
                     }

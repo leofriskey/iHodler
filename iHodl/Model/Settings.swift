@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-class Settings: ObservableObject {
+final class Settings: ObservableObject {
     
     //MARK: Currency
     @AppStorage("currency") var currency = "usd"
@@ -22,7 +22,7 @@ class Settings: ObservableObject {
     @AppStorage("language") var language = "en"
     let languages = ["en", "ru"]
     
-    // market
+    //MARK: market
     var marketTitle: String {
         language == "en" ? "Market" : "Рынок"
     }
@@ -45,7 +45,7 @@ class Settings: ObservableObject {
         language == "en" ? "Overview" : "Обзор"
     }
     
-    // picker
+    //MARK: picker
     var d1Title: String {
         language == "en" ? "1D" : "1Д"
     }
@@ -63,7 +63,7 @@ class Settings: ObservableObject {
     }
     
     
-    // search
+    //MARK: search
     var searchPrompt: String {
         language == "en" ? "Search for all coins" : "Поиск по всем криптовалютам"
     }
@@ -74,7 +74,7 @@ class Settings: ObservableObject {
         language == "en" ? "Could not found any coin for this word... Check spelling or try another one." : "Нет данных по этому запросу... Проверьте написание или попробуйте другое слово."
     }
     
-    // watchlist
+    //MARK: watchlist
     var removeFromWatchlistTitle: String {
         language == "en" ? "Remove from watchlist" : "Убрать из избранного"
     }
@@ -109,12 +109,12 @@ class Settings: ObservableObject {
     }
     
     
-    // settings
+    //MARK: settings
     var settingsTitle: String {
         language == "en" ? "Settings" : "Настройки"
     }
     
-    // defaults
+    //MARRK: defaults
     var defaultsTitle: String {
         language == "en" ? "Defaults" : "Основные"
     }
@@ -128,7 +128,7 @@ class Settings: ObservableObject {
         language == "en" ? "Theme" : "Тема"
     }
     
-    // support app
+    //MARK: support app
     var supportAppTitle: String {
         language == "en" ? "Support iHodl" : "Поддержать iHodl"
     }
@@ -142,7 +142,7 @@ class Settings: ObservableObject {
         language == "en" ? "Donate" : "Донат"
     }
     
-    // contact me
+    //MARK: contact me
     var contactMeTitle: String {
         language == "en" ? "Contact Me" : "Мои контакты"
     }
@@ -170,8 +170,6 @@ class Settings: ObservableObject {
         language == "en" ? "Bitcoin address copied!" : "Bitcoin адрес скопирован!"
     }
     
-    //MARK: Contact me
-    
     
     //MARK: Theme
     @AppStorage("theme") var theme = "Auto"
@@ -195,6 +193,7 @@ class Settings: ObservableObject {
         }
     }
     
+    //MARK: Init
     init() {
         if self.theme == "Light" {
             self.changeTheme(to: "Light")

@@ -59,8 +59,8 @@ extension View {
         }
     }
     
+    //MARK: copy success popover
     func copySuccessPopover(_ visible: Bool, label: String) -> some View {
-        
         return self
                 .overlay(
                     visible ?
@@ -109,19 +109,19 @@ func createDateTime(timestamp: Date, interval: String) -> String {
     dateFormatter.timeZone = TimeZone(abbreviation: timezone) //Set timezone that you want
     dateFormatter.locale = NSLocale.current
     if interval == "1D" {
-        dateFormatter.dateFormat = "EEEE dd, HH:mm" //Specify your format that you want
+        dateFormatter.dateFormat = "EEEE dd, HH:mm"
     }
     if interval == "7D" {
-        dateFormatter.dateFormat = "EEEE dd, HH:mm" //Specify your format that you want
+        dateFormatter.dateFormat = "EEEE dd, HH:mm"
     }
     if interval == "30D" {
-        dateFormatter.dateFormat = "EEEE, MMMM dd" //Specify your format that you want
+        dateFormatter.dateFormat = "EEEE, MMMM dd"
     }
     if interval == "1Y" {
-        dateFormatter.dateFormat = "MMMM dd, YYYY" //Specify your format that you want
+        dateFormatter.dateFormat = "MMMM dd, YYYY"
     }
     if interval == "All" {
-        dateFormatter.dateFormat = "MMMM dd, YYYY" //Specify your format that you want
+        dateFormatter.dateFormat = "MMMM dd, YYYY"
     }
     var strDate = dateFormatter.string(from: timestamp)
        

@@ -11,7 +11,6 @@ struct MarketView: View, Themeable {
     
     @EnvironmentObject private var market: Market
     @EnvironmentObject private var settings: Settings
-    @EnvironmentObject private var network: Network
     
     @Environment(\.colorScheme) internal var colorScheme
     
@@ -28,8 +27,6 @@ struct MarketView: View, Themeable {
                 //MARK: Main content
                 MarketContentView()
                     .searchable(text: $market.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: settings.searchPrompt)
-                    .disabled(network.connected == false ? true : false)
-                    .blur(radius: network.connected == false ? 7 : 0)
                     .onSubmit(of: .search) {
                         Task {
                             await market.validateSearch()
@@ -38,39 +35,6 @@ struct MarketView: View, Themeable {
                     .onReceive(market.errorTimer) { _ in
                         market.reduceErrorTime()
                     }
-                // no internet connectivity
-                if network.connected == false {
-                    ZStack {
-                        // dim the lights
-                        Material02.ignoresSafeArea()
-                        VStack {
-                            Spacer()
-                            // show warning
-                            Label("Check your internet connection", systemImage: "wifi.exclamationmark")
-                                .frame(width: 300, height: 30)
-                                .background(
-
-                                    Material02
-                                        .clipShape(
-                                            RoundedRectangle(cornerRadius: 16)
-                                        )
-                                        .shadow(radius: 2, x: -4, y: 4)
-                                        .shadow(radius: 2, x: 4, y: -4)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 16)
-                                                .stroke(animateNetworkWarnBorder ? .red : .clear)
-                                                .onAppear {
-                                                    withAnimation(.easeInOut(duration: 1).repeatForever(autoreverses: true)) {
-                                                        self.animateNetworkWarnBorder.toggle()
-                                                    }
-                                                }
-                                        )
-
-                                )
-                                .padding()
-                        }
-                    }
-                }
             }
             .navigationTitle(settings.marketTitle)
             .toolbar {
@@ -89,7 +53,6 @@ struct MarketView: View, Themeable {
                         }
                     }
                     .pickerStyle(.segmented)
-                    .disabled(network.connected == false ? true : false)
                 }
             }
         }
@@ -109,14 +72,14 @@ struct MarketView: View, Themeable {
             }
         }
         .onAppear {
-            // check internet connection
-            network.checkConnection()
+            // disallow to rotate device
+            AppDelegate.orientationLock = .portrait
         }
     }
 }
 
 struct MarketView_Previews: PreviewProvider {
     static var previews: some View {
-        MarketView().environment(\.colorScheme, .dark).environmentObject(Market()).environmentObject(Network())
+        MarketView().environment(\.colorScheme, .dark).environmentObject(Market())
     }
 }

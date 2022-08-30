@@ -10,9 +10,7 @@ import SwiftUI
 struct Top10CoinsView: View, Themeable {
     
     @Environment(\.colorScheme) internal var colorScheme
-    
     @EnvironmentObject private var market: Market
-    
     @EnvironmentObject private var settings: Settings
     
     var body: some View {
@@ -38,7 +36,7 @@ struct Top10CoinsView: View, Themeable {
                 }
             }
             .frame(maxWidth: UIScreen.screenWidth * 0.8)
-            VStack(spacing: 20) {
+            LazyVStack(spacing: 20) {
                 ForEach(market.top10Coins) { coin in
                     NavigationLink {
                         CoinDetailView(anyCoin: coin)

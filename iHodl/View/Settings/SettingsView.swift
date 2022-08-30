@@ -57,7 +57,7 @@ struct SettingsView: View, Themeable {
                 BackgroundColor.ignoresSafeArea()
                 
                 ScrollView {
-                    VStack {
+                    LazyVStack {
                         
                         // Spacer
                         ZStack(alignment: .top) {
@@ -274,6 +274,10 @@ struct SettingsView: View, Themeable {
                         .fontWeight(.light)
                         .font(.caption)
                 }
+            }
+            .onAppear {
+                // disallow to rotate device
+                AppDelegate.orientationLock = .portrait
             }
         }
         .copySuccessPopover(settings.showCopyPopover, label: settings.btcCopiedLabel)

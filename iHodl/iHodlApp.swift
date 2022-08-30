@@ -10,17 +10,15 @@ import SwiftUI
 @main
 struct iHodlApp: App {
     
-    @StateObject private var network = Network()
     // app delegate for device rotation controll
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
-    // views
+    // models
     @StateObject private var market = Market()
     
     var body: some Scene {
         WindowGroup {
             MainView()
-                .environmentObject(network)
                 .environmentObject(market)
         }
     }

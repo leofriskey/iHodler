@@ -43,7 +43,7 @@ struct WatchlistCoinsView: View, Themeable {
                     CoinDetailView(anyCoin: coin)
                 } label: {
                     CoinPreviewView(coin: coin, interval: market.marketInterval)
-                    .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.23)
+                    .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.22)
                     //MARK: Watchlist context menu
                     .contextMenu {
                         // remove coin from watchlist

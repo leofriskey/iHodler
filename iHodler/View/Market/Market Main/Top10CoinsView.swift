@@ -36,13 +36,13 @@ struct Top10CoinsView: View, Themeable {
                 }
             }
             .frame(maxWidth: UIScreen.screenWidth * 0.8)
-            LazyVStack(spacing: 20) {
+            LazyVStack(spacing: 0) {
                 ForEach(market.top10Coins) { coin in
                     NavigationLink {
                         CoinDetailView(anyCoin: coin)
                     } label: {
                         CoinPreviewView(coin: coin, interval: market.marketInterval)
-                        .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.2)
+                        .frame(width: UIScreen.screenWidth * 1, height: UIScreen.screenHeight * 0.22)
                         //MARK: Top10 context menu
                         .contextMenu {
                             // "add coin to watchlist" option if coin is not already there

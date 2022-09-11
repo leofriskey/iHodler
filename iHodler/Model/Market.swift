@@ -112,7 +112,6 @@ import Combine
     @Published var oldMarketData: Coin.MarketData? = nil
     
     //MARK: Chart
-    @Published var chartLoaded = true
     @Published var currentActiveItem: CoinChartData? = nil
     
     
@@ -212,12 +211,10 @@ import Combine
     }
     
     //MARK: sync Top 10 & Watchlist
-    func syncTop10andWatchlist() {
+    private func syncTop10andWatchlist() {
         for i in top10Coins {
             if let index = watchlist.firstIndex(where: { $0.id == i.id }) {
-                withAnimation {
-                    watchlist[index] = i
-                }
+                watchlist[index] = i
             }
         }
     }
@@ -243,9 +240,7 @@ import Combine
                     
                     // update CoinPreview in a watchlist
                     if let index = watchlist.firstIndex(where: { $0.id == coinForPreview.id }) {
-                        withAnimation {
-                            watchlist[index] = coinForPreview
-                        }
+                        watchlist[index] = coinForPreview
                     }
                 }
             }
@@ -288,9 +283,7 @@ import Combine
                     return
                 } else {
                     if let index = watchlist.firstIndex(where: { $0.symbol == "placeholder" }) {
-                        withAnimation {
-                            watchlist[index] = coinForPreview
-                        }
+                        watchlist[index] = coinForPreview
                     }
                 }
             }
@@ -483,10 +476,6 @@ import Combine
             try await Task.sleep(nanoseconds: self.sleeptime)
         }
         
-        if isRefresh == false {
-            chartLoaded = false
-        }
-        
         var tempUrl: URL? = nil
         
         if interval == "1D" {
@@ -520,6 +509,7 @@ import Combine
         let decodedResponse = try JSONDecoder().decode(CoinChart.self, from: data)
         
         var tempArray = [CoinChartData]()
+        
         for datePrice in decodedResponse.prices {
             tempArray.append(CoinChartData(date: Date(timeIntervalSince1970: (datePrice[0] / 1000.0)), price: datePrice[1]))
         }
@@ -528,12 +518,12 @@ import Combine
             tempArray = tempArray.enumerated().compactMap { index, element in index % 12 == 0 ? element : nil }
         }
         
+        
         if interval == "All" {
             tempArray = tempArray.enumerated().compactMap { index, element in index % 7 == 0 ? element : nil }
         }
         
         self.currency = currency
-        chartLoaded = true
         return tempArray
     }
     

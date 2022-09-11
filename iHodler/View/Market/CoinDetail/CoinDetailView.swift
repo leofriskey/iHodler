@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 struct CoinDetailView: View, Themeable {
     
@@ -20,16 +21,11 @@ struct CoinDetailView: View, Themeable {
     //MARK: coin & chart
     @State private var coin: Coin? = nil
     @State private var chart = [CoinChartData]()
+    @State private var chartLoaded = false
     
     //MARK: animation
     @State private var blinkPrice = false
     @State private var blinkChange = false
-    
-    //MARK: expanded chart
-    @State private var expandedChart = false
-    
-    //MARK: pricefinder
-    @State private var priceFinderActivated = false
     
     
     //MARK: Layout start
@@ -141,6 +137,7 @@ struct CoinDetailView: View, Themeable {
                         
                         //MARK: fetch chart on appear
                         chart = try await market.fetchCoinChart(coinID: anyCoin.id, interval: market.chartTimePicker)
+                        chartLoaded = true
                     } catch {
                         print("Failed to load \(anyCoin.id) detail info")
                     }
@@ -159,7 +156,9 @@ struct CoinDetailView: View, Themeable {
                         //MARK: update chart on price change
                         Task {
                             do {
+                                chartLoaded = false
                                 chart = try await market.fetchCoinChart(coinID: anyCoin.id, interval: market.chartTimePicker, isRefresh: true)
+                                chartLoaded = true
                             } catch {
                                 print("Failed to load chart on ptice change for \(market.chartTimePicker)")
                             }
@@ -251,66 +250,27 @@ struct CoinDetailView: View, Themeable {
                 //MARK: Chart
                 ZStack {
                     ZStack {
-                        if market.chartLoaded == true {
+                        if chartLoaded == true {
                             GeometryReader { geo in
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    ScrollViewReader { scroll in
-                                        //MARK: chart
-                                        if coin != nil {
-                                            HStack {
-                                                // Space for access to edge point of chart line
-                                                if expandedChart {
-                                                    Color.clear
-                                                        .frame(width: 100)
-                                                }
-                                                ChartView(coin: coin!, data: chart, interval: market.chartTimePicker, expanded: expandedChart, type: .real, showDetailPrice: priceFinderActivated)
-                                                    .frame(height: UIScreen.screenHeight * 0.25)
-                                                    .padding(.horizontal, 5)
-                                                    .frame(width: expandedChart ? geo.size.width * 3 : geo.size.width * 1, height: UIScreen.screenHeight * 0.3)
-                                                    .id("chart")
-                                                    .onChange(of: expandedChart) { newValue in
-                                                        // scroll to the latest data in chart after expanding
-                                                        if newValue == true {
-                                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                                withAnimation(.easeInOut(duration: 0.7)) {
-                                                                    scroll.scrollTo("chart", anchor: .trailing)
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                // Space for access to edge point of chart line
-                                                if expandedChart {
-                                                    Color.clear
-                                                        .frame(width: 80)
-                                                }
-                                            }
-                                        }
-                                    }
+                                //MARK: chart
+                                HStack {
+                                    ChartView(coin: coin, data: chart, interval: market.chartTimePicker)
+                                        .frame(height: UIScreen.screenHeight * 0.25)
+                                        .padding(.horizontal, 5)
+                                        .frame(width:geo.size.width * 1, height: UIScreen.screenHeight * 0.3)
                                 }
                                 //MARK: chart bg
                                 .background(
                                     Rectangle()
-                                        .foregroundStyle(Material02.shadow(.inner(color: priceFinderActivated ? Color.red : Color.primary, radius: 10))
+                                        .foregroundStyle(Material02.shadow(.inner(color: Color.primary, radius: 10))
                                         )
                                 )
-                                // sticky Y Axis labels if expanded chart
-                                .overlay(
-                                    expandedChart ?
-                                    ChartView(coin: coin!, data: chart, interval: market.chartTimePicker, expanded: expandedChart, type: .overlayYAxis, showDetailPrice: false)
-                                        .frame(maxHeight: UIScreen.screenHeight * 0.25)
-                                        .padding(.horizontal, 5)
-                                        .allowsHitTesting(false)
-                                    :
-                                    nil
-                                )
-                                // disable scrolling when priceFinder mode is on
-                                .environment(\.isScrollEnabled, priceFinderActivated ? false : true)
                             }
                         }
                     }
-                    .blur(radius: market.chartLoaded ? 0 : 3)
+                    .blur(radius: chartLoaded ? 0 : 3)
                     //MARK: progress view
-                    if market.chartLoaded == false {
+                    if chartLoaded == false {
                         ProgressView()
                     }
                 }
@@ -334,8 +294,6 @@ struct CoinDetailView: View, Themeable {
                     }
                     .onChange(of: market.chartTimePicker) { _ in
                         //MARK: animate time interval change
-                        market.chartLoaded = false
-                        self.expandedChart = false
                         self.blinkChange = true
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             withAnimation(.easeInOut(duration: 0.5)) {
@@ -345,7 +303,9 @@ struct CoinDetailView: View, Themeable {
                         //MARK: fetch chart on time interval change
                         Task {
                             do {
+                                chartLoaded = false
                                 chart = try await market.fetchCoinChart(coinID: anyCoin.id, interval: market.chartTimePicker)
+                                chartLoaded = true
                             } catch {
                                 print("Failed to load chart for \(market.chartTimePicker)")
                             }
@@ -353,36 +313,6 @@ struct CoinDetailView: View, Themeable {
                     }
                     .pickerStyle(.segmented)
                     .frame(width: UIScreen.screenWidth * 0.7, height: 16)
-                    .padding(.trailing)
-                    
-                    Button {
-                        withAnimation {
-                            priceFinderActivated.toggle()
-                        }
-                    } label: {
-                        Image(systemName: priceFinderActivated ? "xmark.square" : "dot.viewfinder")
-                            .foregroundColor(priceFinderActivated ? Color.red : Color.primary)
-                            .background(
-                                Circle()
-                                    .fill(Material02)
-                                    .frame(width: 32, height: 32)
-                            )
-                    }
-                    .padding(.trailing)
-                    .shadow(radius: priceFinderActivated ? 1 : 0)
-                    
-                    Button {
-                        withAnimation {
-                            expandedChart.toggle()
-                        }
-                    } label: {
-                        Image(systemName: expandedChart ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
-                            .background(
-                                Circle()
-                                    .fill(Material02)
-                                    .frame(width: 32, height: 32)
-                            )
-                    }
                     .padding(.trailing)
                 }
                 .offset(y: UIScreen.screenHeight * 0.15)

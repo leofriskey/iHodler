@@ -80,6 +80,6 @@ struct MarketView: View, Themeable {
 
 struct MarketView_Previews: PreviewProvider {
     static var previews: some View {
-        MarketView().environment(\.colorScheme, .dark).environmentObject(Market())
+        MarketView().environment(\.colorScheme, .dark).environmentObject(Market()).environmentObject(Settings())
     }
 }

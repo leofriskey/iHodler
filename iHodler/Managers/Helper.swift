@@ -115,7 +115,7 @@ func createDateTime(timestamp: Date, interval: String) -> String {
         dateFormatter.dateFormat = "EEEE dd, HH:mm"
     }
     if interval == "30D" {
-        dateFormatter.dateFormat = "EEEE, MMMM dd"
+        dateFormatter.dateFormat = "EEEE, MMMM dd, HH:mm"
     }
     if interval == "1Y" {
         dateFormatter.dateFormat = "MMMM dd, YYYY"

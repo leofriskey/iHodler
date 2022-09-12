@@ -1,0 +1,1 @@
+iHodler is a client-side application that only performs API (GET) HTTP requests to [CoinGecko's API](https://coingecko.com/api/) for data prices retrieval. The application itself doesn't collect any personal data or contain any 3rd party analytics.

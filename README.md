@@ -1,7 +1,7 @@
 # iHodler
 iHodler is a beautiful, simple and open source cryptocurrency prices tracker. It doesn't collect any personal data and is entirely free.
 
-![iHodler's screenshots](https://github.com/leofriskey/iHodler/blob/7f0414aecde716355cd068d1676457ac6ca75f80/Screenshots/iPhone11ProMax%20Presentation.png)
+![iHodler's screenshots](https://github.com/leofriskey/iHodler/blob/2eb0ef29ce6b69e441e70fd5818dfad815c38aa1/Screenshots/iPhone11ProMax%20Presentation.png)
 
 [Watch Demo](https://youtu.be/PTv_e2ivd5w)
 
